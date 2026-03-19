@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { GameStateProvider, XPCounter, StreakBadge } from "@/components/GameElements";
+import { GameStateProvider, BalanceDisplay, StreakBadge } from "@/components/GameElements";
 
 const navItems = [
   { href: "/", label: "Home", icon: "🏠" },
@@ -37,7 +37,7 @@ function DesktopNav() {
 
         <div className="desktop-nav-stats">
           <StreakBadge />
-          <XPCounter />
+          <BalanceDisplay />
         </div>
       </div>
     </nav>
@@ -53,7 +53,7 @@ function MobileTopBar() {
       </Link>
       <div className="mobile-top-stats">
         <StreakBadge />
-        <XPCounter />
+        <BalanceDisplay />
       </div>
     </div>
   );

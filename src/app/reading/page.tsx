@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { readingPassages, literaryDevices, vocabularyWords } from "@/data/lessons";
+import { useGameState } from "@/components/GameElements";
 
 const PASSAGE_ICONS = ["📜", "💬", "🏛️", "🎵"];
 const DIFFICULTY_MAP: Record<string, number> = {
@@ -84,13 +85,13 @@ function highlightVocab(text: string, isPoetry: boolean) {
 }
 
 export default function ReadingPage() {
+  const { addEarnings, balanceCents } = useGameState();
   const [selectedPassage, setSelectedPassage] = useState<number | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [aiResponse, setAiResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [showDevices, setShowDevices] = useState(true);
   const [completedPassages, setCompletedPassages] = useState<Set<number>>(new Set());
-  const [xp, setXp] = useState(0);
   const [showXpPopup, setShowXpPopup] = useState(false);
   const [mcQuestions, setMcQuestions] = useState<string>("");
   const readingRef = useRef<HTMLDivElement>(null);
@@ -125,7 +126,7 @@ export default function ReadingPage() {
       setAiResponse(data.response);
       if (selectedPassage !== null && !completedPassages.has(selectedPassage)) {
         setCompletedPassages(new Set([...completedPassages, selectedPassage]));
-        setXp((prev) => prev + 15);
+        addEarnings(15);
         setShowXpPopup(true);
       }
     } catch {
@@ -195,7 +196,7 @@ export default function ReadingPage() {
               className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm shadow-lg"
               style={{ background: "linear-gradient(135deg, #1e3a5f, #2d5a8e)", color: "#00d4aa" }}
             >
-              <span style={{ fontSize: "1.2rem" }}>&#9889;</span> {xp} XP
+              $ {(balanceCents / 100).toFixed(2)}
             </div>
           </div>
 
@@ -279,7 +280,7 @@ export default function ReadingPage() {
                           className="text-[10px] font-extrabold px-2.5 py-1 rounded-full"
                           style={{ backgroundColor: "#00d4aa", color: "white" }}
                         >
-                          +15 XP
+                          +$0.15
                         </span>
                       )}
                       <span
@@ -355,7 +356,7 @@ export default function ReadingPage() {
             color: "white",
           }}
         >
-          <span style={{ fontSize: "1.5rem" }}>&#9889;</span> +15 XP earned!
+          <span style={{ fontSize: "1.5rem" }}>$</span> +$0.15 earned!
         </div>
       )}
 
@@ -390,7 +391,7 @@ export default function ReadingPage() {
               className="flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm shadow-md"
               style={{ background: "linear-gradient(135deg, #1e3a5f, #2d5a8e)", color: "#00d4aa" }}
             >
-              <span style={{ fontSize: "1.1rem" }}>&#9889;</span> {xp} XP
+              $ {(balanceCents / 100).toFixed(2)}
             </div>
           </div>
         </div>
@@ -517,7 +518,7 @@ export default function ReadingPage() {
                     Comprehension Questions
                   </h3>
                   <p className="text-xs" style={{ color: "#94a3b8" }}>
-                    Answer all three to earn +15 XP
+                    Answer all three to earn +$0.15
                   </p>
                 </div>
               </div>

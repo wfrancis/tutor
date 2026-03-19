@@ -1,23 +1,47 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useGameState } from "@/components/GameElements";
+import { useGameState, CashInModal } from "@/components/GameElements";
+
+const MILESTONES = [
+  { threshold: 0, title: "Getting Started" },
+  { threshold: 100, title: "First Dollar!" },
+  { threshold: 500, title: "$5 Club" },
+  { threshold: 1000, title: "$10 Earner" },
+  { threshold: 2500, title: "$25 Pro" },
+  { threshold: 5000, title: "$50 Legend" },
+  { threshold: 10000, title: "$100 Master" },
+];
+
+function getMilestone(totalCents: number) {
+  let current = MILESTONES[0];
+  let next = MILESTONES[1];
+  for (let i = MILESTONES.length - 1; i >= 0; i--) {
+    if (totalCents >= MILESTONES[i].threshold) {
+      current = MILESTONES[i];
+      next = MILESTONES[i + 1] || null;
+      break;
+    }
+  }
+  return { current, next };
+}
 
 const skills = [
-  { name: "Metaphor & Simile", progress: 70, icon: "🎭" },
-  { name: "Vocabulary", progress: 45, icon: "📝" },
-  { name: "Reading Comp", progress: 55, icon: "📖" },
-  { name: "Poetry Analysis", progress: 40, icon: "🎵" },
-  { name: "Literary Devices", progress: 60, icon: "🔬" },
-  { name: "Context Clues", progress: 35, icon: "🔎" },
+  { name: "Metaphor & Simile", progress: 70, icon: "\uD83C\uDFAD" },
+  { name: "Vocabulary", progress: 45, icon: "\uD83D\uDCDD" },
+  { name: "Reading Comp", progress: 55, icon: "\uD83D\uDCD6" },
+  { name: "Poetry Analysis", progress: 40, icon: "\uD83C\uDFB5" },
+  { name: "Literary Devices", progress: 60, icon: "\uD83D\uDD2C" },
+  { name: "Context Clues", progress: 35, icon: "\uD83D\uDD0E" },
 ];
 
 const missions = [
-  { title: "Vocab Speed Round", path: "/vocabulary", type: "vocab", icon: "📚" },
-  { title: "Poetry Deep Dive", path: "/reading", type: "reading", icon: "📖" },
-  { title: "AI Grammar Battle", path: "/practice", type: "practice", icon: "🤖" },
-  { title: "Context Clue Challenge", path: "/vocabulary", type: "vocab", icon: "🔎" },
-  { title: "Reading Blitz", path: "/reading", type: "reading", icon: "📖" },
+  { title: "Vocab Speed Round", path: "/vocabulary", type: "vocab", icon: "\uD83D\uDCDA" },
+  { title: "Poetry Deep Dive", path: "/reading", type: "reading", icon: "\uD83D\uDCD6" },
+  { title: "AI Grammar Battle", path: "/practice", type: "practice", icon: "\uD83E\uDD16" },
+  { title: "Context Clue Challenge", path: "/vocabulary", type: "vocab", icon: "\uD83D\uDD0E" },
+  { title: "Reading Blitz", path: "/reading", type: "reading", icon: "\uD83D\uDCD6" },
 ];
 
 function getDailyMission() {
@@ -28,42 +52,51 @@ function getDailyMission() {
   return missions[dayIndex];
 }
 
+function formatDollars(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
 export default function Home() {
-  const { xp, streak, level, wordsmastered } = useGameState();
+  const { balanceCents, totalEarnedCents, streak, wordsmastered } = useGameState();
+  const [showCashIn, setShowCashIn] = useState(false);
   const dailyMission = getDailyMission();
-  const xpInLevel = xp % 200;
-  const xpNeeded = 200;
-  const levelProgress = (xpInLevel / xpNeeded) * 100;
+  const { current: milestone, next: nextMilestone } = getMilestone(totalEarnedCents);
+  const milestoneProgress = nextMilestone
+    ? ((totalEarnedCents - milestone.threshold) / (nextMilestone.threshold - milestone.threshold)) * 100
+    : 100;
 
   return (
     <div className="dashboard">
+      {/* Cash In Modal */}
+      {showCashIn && <CashInModal onClose={() => setShowCashIn(false)} />}
+
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
           <div className="hero-greeting">
             <h1 className="hero-title">
-              Hey Cole! <span className="hero-wave">👋</span>
+              Hey Cole! <span className="hero-wave">{"\uD83D\uDC4B"}</span>
             </h1>
             <p className="hero-subtitle">Ready for today&apos;s quest?</p>
           </div>
 
           <div className="hero-stats-row">
             <div className="hero-stat-card hero-stat-level">
-              <div className="hero-stat-icon">🛡️</div>
+              <div className="hero-stat-icon">{"\uD83D\uDCB0"}</div>
               <div className="hero-stat-info">
-                <span className="hero-stat-value">{level}</span>
-                <span className="hero-stat-label">Level</span>
+                <span className="hero-stat-value">{formatDollars(balanceCents)}</span>
+                <span className="hero-stat-label">Balance</span>
               </div>
             </div>
             <div className="hero-stat-card hero-stat-xp">
-              <div className="hero-stat-icon">⚡</div>
+              <div className="hero-stat-icon">{"\uD83D\uDCB5"}</div>
               <div className="hero-stat-info">
-                <span className="hero-stat-value">{xp.toLocaleString()}</span>
-                <span className="hero-stat-label">Total XP</span>
+                <span className="hero-stat-value">{formatDollars(totalEarnedCents)}</span>
+                <span className="hero-stat-label">Total Earned</span>
               </div>
             </div>
             <div className="hero-stat-card hero-stat-streak">
-              <div className="hero-stat-icon">🔥</div>
+              <div className="hero-stat-icon">{"\uD83D\uDD25"}</div>
               <div className="hero-stat-info">
                 <span className="hero-stat-value">{streak}</span>
                 <span className="hero-stat-label">Day Streak</span>
@@ -71,17 +104,33 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="hero-level-bar">
+          {/* Cash In Button */}
+          {balanceCents > 0 && (
+            <button
+              onClick={() => setShowCashIn(true)}
+              className="w-full mt-4 py-4 rounded-2xl font-extrabold text-lg text-white transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+              style={{
+                background: "linear-gradient(135deg, #16a34a, #15803d)",
+                boxShadow: "0 4px 20px rgba(22,163,74,0.4)",
+              }}
+            >
+              {"\uD83D\uDCB8"} Cash In {formatDollars(balanceCents)}
+            </button>
+          )}
+
+          <div className="hero-level-bar" style={{ marginTop: "1rem" }}>
             <div className="hero-level-info">
-              <span className="hero-level-current">Level {level}</span>
+              <span className="hero-level-current">{milestone.title}</span>
               <span className="hero-level-progress">
-                {xpInLevel}/{xpNeeded} XP to Level {level + 1}
+                {nextMilestone
+                  ? `${formatDollars(totalEarnedCents)} / ${formatDollars(nextMilestone.threshold)} to ${nextMilestone.title}`
+                  : "Max milestone reached!"}
               </span>
             </div>
             <div className="xp-bar large">
               <div
                 className="xp-bar-fill"
-                style={{ width: `${levelProgress}%` }}
+                style={{ width: `${milestoneProgress}%` }}
               />
             </div>
           </div>
@@ -103,14 +152,14 @@ export default function Home() {
             {dailyMission.title}
           </h2>
           <p className="daily-challenge-desc">
-            Complete today&apos;s challenge to earn bonus XP and keep your streak going!
+            Complete today&apos;s challenge to earn bonus cash and keep your streak going!
           </p>
           <div className="daily-challenge-footer">
             <div className="daily-challenge-reward">
-              <span className="daily-challenge-reward-icon">🎯</span>
-              <span>+50 XP Reward</span>
+              <span className="daily-challenge-reward-icon">{"\uD83C\uDFAF"}</span>
+              <span>+$0.50 Reward</span>
             </div>
-            <span className="daily-challenge-cta">Start Mission →</span>
+            <span className="daily-challenge-cta">Start Mission {"\u2192"}</span>
           </div>
         </Link>
       </section>
@@ -118,18 +167,18 @@ export default function Home() {
       {/* Activity Quest Cards */}
       <section className="quest-section">
         <h2 className="section-heading">
-          <span className="section-heading-icon">⚔️</span>
+          <span className="section-heading-icon">{"\u2694\uFE0F"}</span>
           Choose Your Quest
         </h2>
         <div className="quest-grid">
           {/* Vocab Quest */}
           <Link href="/vocabulary" className="quest-card quest-vocab">
             <div className="quest-card-header">
-              <span className="quest-icon">📚</span>
+              <span className="quest-icon">{"\uD83D\uDCDA"}</span>
               <div className="quest-difficulty">
-                <span className="quest-star filled">★</span>
-                <span className="quest-star filled">★</span>
-                <span className="quest-star empty">★</span>
+                <span className="quest-star filled">{"\u2605"}</span>
+                <span className="quest-star filled">{"\u2605"}</span>
+                <span className="quest-star empty">{"\u2605"}</span>
               </div>
             </div>
             <h3 className="quest-title">Vocab Quest</h3>
@@ -150,17 +199,17 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="quest-cta">Enter Quest →</div>
+            <div className="quest-cta">Enter Quest {"\u2192"}</div>
           </Link>
 
           {/* Reading Arena */}
           <Link href="/reading" className="quest-card quest-reading">
             <div className="quest-card-header">
-              <span className="quest-icon">📖</span>
+              <span className="quest-icon">{"\uD83D\uDCD6"}</span>
               <div className="quest-difficulty">
-                <span className="quest-star filled">★</span>
-                <span className="quest-star filled">★</span>
-                <span className="quest-star filled">★</span>
+                <span className="quest-star filled">{"\u2605"}</span>
+                <span className="quest-star filled">{"\u2605"}</span>
+                <span className="quest-star filled">{"\u2605"}</span>
               </div>
             </div>
             <h3 className="quest-title">Reading Arena</h3>
@@ -176,17 +225,17 @@ export default function Home() {
                 <div className="xp-bar-fill" style={{ width: "30%" }} />
               </div>
             </div>
-            <div className="quest-cta">Enter Arena →</div>
+            <div className="quest-cta">Enter Arena {"\u2192"}</div>
           </Link>
 
           {/* AI Battle */}
           <Link href="/practice" className="quest-card quest-ai">
             <div className="quest-card-header">
-              <span className="quest-icon">🤖</span>
+              <span className="quest-icon">{"\uD83E\uDD16"}</span>
               <div className="quest-difficulty">
-                <span className="quest-star filled">★</span>
-                <span className="quest-star filled">★</span>
-                <span className="quest-star filled">★</span>
+                <span className="quest-star filled">{"\u2605"}</span>
+                <span className="quest-star filled">{"\u2605"}</span>
+                <span className="quest-star filled">{"\u2605"}</span>
               </div>
             </div>
             <h3 className="quest-title">AI Battle</h3>
@@ -202,7 +251,7 @@ export default function Home() {
                 <div className="xp-bar-fill" style={{ width: "50%" }} />
               </div>
             </div>
-            <div className="quest-cta">Start Battle →</div>
+            <div className="quest-cta">Start Battle {"\u2192"}</div>
           </Link>
         </div>
       </section>
@@ -210,39 +259,39 @@ export default function Home() {
       {/* Recent Activity */}
       <section className="recent-activity">
         <h2 className="section-heading">
-          <span className="section-heading-icon">📋</span>
+          <span className="section-heading-icon">{"\uD83D\uDCCB"}</span>
           Recent Activity
         </h2>
         <div className="activity-list">
           <div className="activity-item">
             <div className="activity-icon-wrapper activity-icon-vocab">
-              <span className="activity-icon">📚</span>
+              <span className="activity-icon">{"\uD83D\uDCDA"}</span>
             </div>
             <div className="activity-info">
               <span className="activity-title">Vocabulary Quiz</span>
               <span className="activity-meta">Score pending — start your first session!</span>
             </div>
-            <span className="activity-xp">+0 XP</span>
+            <span className="activity-xp">$0.00</span>
           </div>
           <div className="activity-item">
             <div className="activity-icon-wrapper activity-icon-reading">
-              <span className="activity-icon">📖</span>
+              <span className="activity-icon">{"\uD83D\uDCD6"}</span>
             </div>
             <div className="activity-info">
               <span className="activity-title">Reading Comprehension</span>
               <span className="activity-meta">No sessions yet — jump in!</span>
             </div>
-            <span className="activity-xp">+0 XP</span>
+            <span className="activity-xp">$0.00</span>
           </div>
           <div className="activity-item">
             <div className="activity-icon-wrapper activity-icon-ai">
-              <span className="activity-icon">🤖</span>
+              <span className="activity-icon">{"\uD83E\uDD16"}</span>
             </div>
             <div className="activity-info">
               <span className="activity-title">AI Practice</span>
               <span className="activity-meta">The AI tutor is waiting for you</span>
             </div>
-            <span className="activity-xp">+0 XP</span>
+            <span className="activity-xp">$0.00</span>
           </div>
         </div>
       </section>
@@ -250,7 +299,7 @@ export default function Home() {
       {/* Skills Progress */}
       <section className="skills-section">
         <h2 className="section-heading">
-          <span className="section-heading-icon">📊</span>
+          <span className="section-heading-icon">{"\uD83D\uDCCA"}</span>
           Skills Progress
         </h2>
         <div className="skills-grid">

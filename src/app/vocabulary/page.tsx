@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { vocabularyWords, VocabWord } from "@/data/lessons";
+import { useGameState } from "@/components/GameElements";
 
 // ── Types ──────────────────────────────────────────────
 type Mode = "flashcards" | "quiz" | "fill";
@@ -52,6 +53,8 @@ function starRating(score: number, total: number): number {
 
 // ── Component ──────────────────────────────────────────
 export default function VocabularyPage() {
+  const { addEarnings, balanceCents } = useGameState();
+
   // Mode & filters
   const [mode, setMode] = useState<Mode>("flashcards");
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
@@ -69,7 +72,6 @@ export default function VocabularyPage() {
   const [quizDone, setQuizDone] = useState(false);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
-  const [xp, setXp] = useState(0);
   const [xpPopup, setXpPopup] = useState<{ amount: number; key: number } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState<ConfettiPiece[]>([]);
@@ -201,7 +203,7 @@ export default function VocabularyPage() {
       setStreak(newStreak);
       if (newStreak > bestStreak) setBestStreak(newStreak);
       const bonus = newStreak >= 3 ? 20 : 10;
-      setXp((x) => x + bonus);
+      addEarnings(bonus);
       showXpGain(bonus);
       // Mark as mastered
       setMastery((prev) => ({ ...prev, [quizQuestions[qi].word.term]: "know" }));
@@ -251,7 +253,7 @@ export default function VocabularyPage() {
     if (correct) {
       const pts = fillHintUsed ? 5 : 10;
       setFillScore((s) => s + pts);
-      setXp((x) => x + pts);
+      addEarnings(pts);
       showXpGain(pts);
       setMastery((prev) => ({ ...prev, [word.term]: "know" }));
     } else {
@@ -276,7 +278,6 @@ export default function VocabularyPage() {
   function handleFillHint() {
     if (!fillQuestions[fillIndex]) return;
     setFillHintUsed(true);
-    setXp((x) => Math.max(0, x - 5));
     setFillInput(fillQuestions[fillIndex].term[0]);
   }
 
@@ -339,7 +340,7 @@ export default function VocabularyPage() {
               textShadow: `0 0 20px ${xpPopup.amount >= 20 ? "var(--special-glow)" : "var(--accent-glow)"}`,
             }}
           >
-            +{xpPopup.amount} XP
+            +${(xpPopup.amount / 100).toFixed(2)}
           </span>
         </div>
       )}
@@ -357,7 +358,7 @@ export default function VocabularyPage() {
       {/* ── Stats Bar ── */}
       <div className="flex flex-wrap gap-3 mb-5">
         <div className="xp-badge">
-          <span>&#9889;</span> {xp} XP
+          <span>$</span> ${(balanceCents / 100).toFixed(2)}
         </div>
         <div className="streak-badge">
           <span className="streak-fire">&#128293;</span> Best Streak: {bestStreak}
@@ -767,7 +768,7 @@ export default function VocabularyPage() {
                   Word {fillIndex + 1} of {fillQuestions.length}
                 </span>
                 <span className="xp-badge text-xs">
-                  <span>&#9889;</span> {fillScore} pts
+                  <span>$</span> ${(fillScore / 100).toFixed(2)}
                 </span>
               </div>
               <div className="progress-bar mb-6">
@@ -831,7 +832,7 @@ export default function VocabularyPage() {
                         className="btn btn-ghost btn-sm"
                         onClick={handleFillHint}
                       >
-                        <span>&#128161;</span> Hint (first letter) &mdash; costs 5 XP
+                        <span>&#128161;</span> Hint (first letter) &mdash; reduces reward
                       </button>
                     )}
                     {fillHintUsed && !fillResult && (
@@ -872,7 +873,7 @@ export default function VocabularyPage() {
             /* ── Fill Results ── */
             <div className="card text-center animate-bounce-in">
               <h2 className="text-5xl font-black mb-2" style={{ color: "var(--accent)" }}>
-                {fillScore} pts
+                ${(fillScore / 100).toFixed(2)}
               </h2>
               <div className="flex justify-center gap-1 mb-4">
                 {Array.from({ length: 5 }, (_, i) => (
