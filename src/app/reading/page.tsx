@@ -124,7 +124,7 @@ export default function ReadingPage() {
       });
       const data = await res.json();
       setAiResponse(data.response);
-      if (selectedPassage !== null && !completedPassages.has(selectedPassage)) {
+      if (res.ok && selectedPassage !== null && !completedPassages.has(selectedPassage)) {
         setCompletedPassages(new Set([...completedPassages, selectedPassage]));
         addEarnings(15);
         setShowXpPopup(true);
