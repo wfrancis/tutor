@@ -1,28 +1,39 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { NavWrapper } from "@/components/NavWrapper";
 
 export const metadata: Metadata = {
-  title: "Cole's English Practice Hub",
-  description: "AI-powered English practice for standardized test prep — based on lessons with tutor Ann Kenny",
+  title: "English Quest — Cole's Training Ground",
+  description:
+    "AI-powered English practice for standardized test prep — level up your vocab, reading, and writing skills.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "English Quest",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0b1628",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen">
-        <nav className="border-b border-[var(--card-border)] bg-white sticky top-0 z-50">
-          <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <a href="/" className="text-xl font-bold text-[var(--primary)]">
-              English Practice Hub
-            </a>
-            <div className="flex gap-6 text-sm font-medium">
-              <a href="/vocabulary" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">Vocabulary</a>
-              <a href="/reading" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">Reading</a>
-              <a href="/practice" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">AI Practice</a>
-            </div>
-          </div>
-        </nav>
-        <main>{children}</main>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="min-h-screen bg-[#0b1628] text-[#e2e8f0] font-[Inter,system-ui,sans-serif]">
+        <NavWrapper>{children}</NavWrapper>
       </body>
     </html>
   );
