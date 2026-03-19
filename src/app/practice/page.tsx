@@ -159,7 +159,7 @@ export default function PracticePage() {
             >
               Choose Your Mission
             </h1>
-            <p className="text-sm" style={{ color: "#b0bec5" }}>
+            <p className="text-sm" style={{ color: "#64748b" }}>
               Pick a practice mode and chat with your AI tutor
             </p>
           </div>
@@ -202,14 +202,14 @@ export default function PracticePage() {
                   </h3>
 
                   {/* Description */}
-                  <p className="text-xs leading-relaxed mb-4 relative" style={{ color: "#b0bec5" }}>
+                  <p className="text-xs leading-relaxed mb-4 relative" style={{ color: "#64748b" }}>
                     {mode.description}
                   </p>
 
                   {/* Bottom meta */}
                   <div className="flex items-center justify-between relative">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold" style={{ color: "#b0bec5" }}>
+                      <span className="text-[10px] font-bold" style={{ color: "#64748b" }}>
                         Difficulty
                       </span>
                       <div className="flex gap-0.5">
@@ -226,7 +226,7 @@ export default function PracticePage() {
                     </div>
                     <span
                       className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: "#f1f5f9", color: "#b0bec5" }}
+                      style={{ backgroundColor: "#f1f5f9", color: "#64748b" }}
                     >
                       ~{mode.time}
                     </span>
@@ -280,7 +280,7 @@ export default function PracticePage() {
                     className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: loading ? "#fbbf24" : "#00d4aa" }}
                   />
-                  <span className="text-[10px] font-medium" style={{ color: "#b0bec5" }}>
+                  <span className="text-[10px] font-medium" style={{ color: "#64748b" }}>
                     {loading ? "Typing..." : "Online"}
                   </span>
                 </div>
@@ -315,7 +315,7 @@ export default function PracticePage() {
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:shadow-md"
                 style={{
                   backgroundColor: "white",
-                  color: "#b0bec5",
+                  color: "#64748b",
                   border: "1px solid #e2e8f0",
                 }}
               >
