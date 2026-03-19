@@ -3,6 +3,9 @@ export interface VocabWord {
   definition: string;
   example?: string;
   lesson: number;
+  difficulty?: "easy" | "medium" | "hard";
+  synonyms?: string[];
+  antonyms?: string[];
 }
 
 export interface LiteraryDevice {
@@ -21,60 +24,60 @@ export interface ReadingPassage {
 // Vocabulary from Ann Kenny's lessons (Jan-Mar 2026)
 export const vocabularyWords: VocabWord[] = [
   // Lesson 1 - General vocabulary
-  { term: "Elaborate", definition: "To develop or present in detail; complex and detailed", example: "The architect created an elaborate design for the new museum.", lesson: 1 },
-  { term: "Concurrent", definition: "Existing, happening, or done at the same time", example: "The two concerts were concurrent, so we had to choose one.", lesson: 1 },
-  { term: "Ambiguous", definition: "Open to more than one interpretation; not clear", example: "The ending of the story was ambiguous—readers couldn't tell if the hero survived.", lesson: 1 },
-  { term: "Infer", definition: "To deduce or conclude from evidence and reasoning rather than from explicit statements", example: "From the dark clouds, we can infer that it will rain soon.", lesson: 1 },
-  { term: "Convey", definition: "To communicate or make known; to transport or carry to a place", example: "The author uses imagery to convey a sense of loneliness.", lesson: 1 },
+  { term: "Elaborate", definition: "To develop or present in detail; complex and detailed", example: "The architect created an elaborate design for the new museum.", lesson: 1, difficulty: "medium", synonyms: ["detailed", "intricate", "complex"], antonyms: ["simple", "plain"] },
+  { term: "Concurrent", definition: "Existing, happening, or done at the same time", example: "The two concerts were concurrent, so we had to choose one.", lesson: 1, difficulty: "hard", synonyms: ["simultaneous", "parallel"], antonyms: ["sequential", "separate"] },
+  { term: "Ambiguous", definition: "Open to more than one interpretation; not clear", example: "The ending of the story was ambiguous—readers couldn't tell if the hero survived.", lesson: 1, difficulty: "medium", synonyms: ["vague", "unclear", "uncertain"], antonyms: ["clear", "definite", "obvious"] },
+  { term: "Infer", definition: "To deduce or conclude from evidence and reasoning rather than from explicit statements", example: "From the dark clouds, we can infer that it will rain soon.", lesson: 1, difficulty: "medium", synonyms: ["deduce", "conclude", "gather"], antonyms: ["state", "declare"] },
+  { term: "Convey", definition: "To communicate or make known; to transport or carry to a place", example: "The author uses imagery to convey a sense of loneliness.", lesson: 1, difficulty: "easy", synonyms: ["communicate", "express", "transmit"], antonyms: ["conceal", "withhold"] },
 
   // Lesson 2 - Reading & comprehension vocabulary
-  { term: "Narrative", definition: "A spoken or written account of connected events; a story", example: "The documentary followed a compelling narrative about ocean life.", lesson: 2 },
-  { term: "Perspective", definition: "A particular attitude or way of regarding something; a point of view", example: "The novel is told from the perspective of a young girl.", lesson: 2 },
-  { term: "Context", definition: "The circumstances that form the setting for an event, statement, or idea", example: "You need to understand the historical context to appreciate the poem.", lesson: 2 },
-  { term: "Summarize", definition: "To give a brief statement of the main points", example: "Can you summarize the article in two sentences?", lesson: 2 },
-  { term: "Theme", definition: "The central topic or message of a text", example: "The theme of the story is the importance of perseverance.", lesson: 2 },
+  { term: "Narrative", definition: "A spoken or written account of connected events; a story", example: "The documentary followed a compelling narrative about ocean life.", lesson: 2, difficulty: "easy", synonyms: ["story", "account", "tale"], antonyms: [] },
+  { term: "Perspective", definition: "A particular attitude or way of regarding something; a point of view", example: "The novel is told from the perspective of a young girl.", lesson: 2, difficulty: "medium", synonyms: ["viewpoint", "standpoint", "outlook"], antonyms: [] },
+  { term: "Context", definition: "The circumstances that form the setting for an event, statement, or idea", example: "You need to understand the historical context to appreciate the poem.", lesson: 2, difficulty: "medium", synonyms: ["background", "setting", "circumstances"], antonyms: [] },
+  { term: "Summarize", definition: "To give a brief statement of the main points", example: "Can you summarize the article in two sentences?", lesson: 2, difficulty: "easy", synonyms: ["recap", "outline", "condense"], antonyms: ["elaborate", "expand"] },
+  { term: "Theme", definition: "The central topic or message of a text", example: "The theme of the story is the importance of perseverance.", lesson: 2, difficulty: "easy", synonyms: ["topic", "subject", "motif"], antonyms: [] },
 
   // Lesson 3 - Analytical vocabulary
-  { term: "Analyze", definition: "To examine in detail the elements or structure of something", example: "We need to analyze the poem's use of figurative language.", lesson: 3 },
-  { term: "Evidence", definition: "Facts or information indicating whether a belief or proposition is true or valid", example: "The detective gathered evidence at the scene of the crime.", lesson: 3 },
-  { term: "Claim", definition: "A statement that something is the case, typically without providing evidence at first", example: "The author's main claim is that technology improves education.", lesson: 3 },
-  { term: "Cite", definition: "To quote or reference as evidence for an argument", example: "Always cite your sources when writing a research paper.", lesson: 3 },
-  { term: "Contrast", definition: "To compare in order to show differences", example: "The essay contrasts life in the city with life in the countryside.", lesson: 3 },
+  { term: "Analyze", definition: "To examine in detail the elements or structure of something", example: "We need to analyze the poem's use of figurative language.", lesson: 3, difficulty: "medium", synonyms: ["examine", "study", "investigate"], antonyms: ["ignore", "overlook"] },
+  { term: "Evidence", definition: "Facts or information indicating whether a belief or proposition is true or valid", example: "The detective gathered evidence at the scene of the crime.", lesson: 3, difficulty: "easy", synonyms: ["proof", "data", "facts"], antonyms: ["speculation", "opinion"] },
+  { term: "Claim", definition: "A statement that something is the case, typically without providing evidence at first", example: "The author's main claim is that technology improves education.", lesson: 3, difficulty: "medium", synonyms: ["assertion", "argument", "statement"], antonyms: ["denial", "retraction"] },
+  { term: "Cite", definition: "To quote or reference as evidence for an argument", example: "Always cite your sources when writing a research paper.", lesson: 3, difficulty: "medium", synonyms: ["quote", "reference", "mention"], antonyms: [] },
+  { term: "Contrast", definition: "To compare in order to show differences", example: "The essay contrasts life in the city with life in the countryside.", lesson: 3, difficulty: "easy", synonyms: ["compare", "differentiate", "distinguish"], antonyms: ["equate", "liken"] },
 
   // Lesson 4 - Literary devices vocabulary
-  { term: "Metaphor", definition: "A figure of speech that describes something by saying it IS something else", example: "'Time is money' is a metaphor comparing time to a valuable resource.", lesson: 4 },
-  { term: "Simile", definition: "A figure of speech comparing two things using 'like' or 'as'", example: "'Her smile was like sunshine' is a simile.", lesson: 4 },
-  { term: "Cliché", definition: "An overused phrase or opinion that has lost its original impact", example: "'Every cloud has a silver lining' is a cliché.", lesson: 4 },
-  { term: "Imagery", definition: "Visually descriptive or figurative language that appeals to the senses", example: "The poet used vivid imagery of crashing waves and salty air.", lesson: 4 },
-  { term: "Tone", definition: "The general character or attitude of a piece of writing", example: "The tone of the letter was formal and serious.", lesson: 4 },
+  { term: "Metaphor", definition: "A figure of speech that describes something by saying it IS something else", example: "'Time is money' is a metaphor comparing time to a valuable resource.", lesson: 4, difficulty: "medium", synonyms: ["figure of speech", "comparison"], antonyms: ["literal statement"] },
+  { term: "Simile", definition: "A figure of speech comparing two things using 'like' or 'as'", example: "'Her smile was like sunshine' is a simile.", lesson: 4, difficulty: "easy", synonyms: ["comparison", "analogy"], antonyms: [] },
+  { term: "Cliché", definition: "An overused phrase or opinion that has lost its original impact", example: "'Every cloud has a silver lining' is a cliché.", lesson: 4, difficulty: "medium", synonyms: ["platitude", "truism", "stereotype"], antonyms: ["original", "novel"] },
+  { term: "Imagery", definition: "Visually descriptive or figurative language that appeals to the senses", example: "The poet used vivid imagery of crashing waves and salty air.", lesson: 4, difficulty: "medium", synonyms: ["description", "visualization", "depiction"], antonyms: [] },
+  { term: "Tone", definition: "The general character or attitude of a piece of writing", example: "The tone of the letter was formal and serious.", lesson: 4, difficulty: "easy", synonyms: ["mood", "attitude", "manner"], antonyms: [] },
 
   // Lesson 5 - Historical/academic vocabulary
-  { term: "Chronological", definition: "Arranged in the order of time; following the order in which events happened", example: "The textbook presents events in chronological order.", lesson: 5 },
-  { term: "Era", definition: "A long and distinct period of history with particular characteristics", example: "The Roman era lasted for centuries.", lesson: 5 },
-  { term: "Decline", definition: "A gradual decrease in strength, numbers, or quality; to diminish", example: "The decline of the Roman Empire took centuries.", lesson: 5 },
-  { term: "Conquest", definition: "The act of conquering a place or people by force", example: "The conquest of new territories expanded the empire.", lesson: 5 },
-  { term: "Civilization", definition: "An advanced stage of human social development and organization", example: "Ancient Egyptian civilization produced remarkable architecture.", lesson: 5 },
+  { term: "Chronological", definition: "Arranged in the order of time; following the order in which events happened", example: "The textbook presents events in chronological order.", lesson: 5, difficulty: "medium", synonyms: ["sequential", "ordered", "temporal"], antonyms: ["random", "unordered"] },
+  { term: "Era", definition: "A long and distinct period of history with particular characteristics", example: "The Roman era lasted for centuries.", lesson: 5, difficulty: "easy", synonyms: ["age", "epoch", "period"], antonyms: [] },
+  { term: "Decline", definition: "A gradual decrease in strength, numbers, or quality; to diminish", example: "The decline of the Roman Empire took centuries.", lesson: 5, difficulty: "easy", synonyms: ["decrease", "deterioration", "downturn"], antonyms: ["growth", "rise", "increase"] },
+  { term: "Conquest", definition: "The act of conquering a place or people by force", example: "The conquest of new territories expanded the empire.", lesson: 5, difficulty: "medium", synonyms: ["victory", "takeover", "subjugation"], antonyms: ["defeat", "surrender"] },
+  { term: "Civilization", definition: "An advanced stage of human social development and organization", example: "Ancient Egyptian civilization produced remarkable architecture.", lesson: 5, difficulty: "easy", synonyms: ["society", "culture", "community"], antonyms: ["barbarism"] },
 
   // Lesson 6 - Music & culture vocabulary
-  { term: "Genre", definition: "A category of artistic composition characterized by similarities in form, style, or subject", example: "Blues is a genre of music that originated in the American South.", lesson: 6 },
-  { term: "Origin", definition: "The point or place where something begins or is created", example: "The origin of jazz can be traced to New Orleans.", lesson: 6 },
-  { term: "Influence", definition: "The capacity to have an effect on someone's character, development, or behavior", example: "African musical traditions had a strong influence on the blues.", lesson: 6 },
-  { term: "Expression", definition: "The process of making known one's thoughts or feelings", example: "Music is a powerful form of personal expression.", lesson: 6 },
-  { term: "Tradition", definition: "A long-established custom or belief passed from generation to generation", example: "Storytelling is an important tradition in many cultures.", lesson: 6 },
+  { term: "Genre", definition: "A category of artistic composition characterized by similarities in form, style, or subject", example: "Blues is a genre of music that originated in the American South.", lesson: 6, difficulty: "medium", synonyms: ["category", "type", "style"], antonyms: [] },
+  { term: "Origin", definition: "The point or place where something begins or is created", example: "The origin of jazz can be traced to New Orleans.", lesson: 6, difficulty: "easy", synonyms: ["source", "beginning", "root"], antonyms: ["end", "conclusion"] },
+  { term: "Influence", definition: "The capacity to have an effect on someone's character, development, or behavior", example: "African musical traditions had a strong influence on the blues.", lesson: 6, difficulty: "easy", synonyms: ["impact", "effect", "sway"], antonyms: [] },
+  { term: "Expression", definition: "The process of making known one's thoughts or feelings", example: "Music is a powerful form of personal expression.", lesson: 6, difficulty: "easy", synonyms: ["communication", "articulation", "statement"], antonyms: ["suppression", "concealment"] },
+  { term: "Tradition", definition: "A long-established custom or belief passed from generation to generation", example: "Storytelling is an important tradition in many cultures.", lesson: 6, difficulty: "easy", synonyms: ["custom", "practice", "heritage"], antonyms: ["innovation", "novelty"] },
 
   // Lesson 7 - Advanced vocabulary
-  { term: "Determine", definition: "To discover the facts about something; to establish exactly by research or calculation", example: "Scientists worked to determine the cause of the disease.", lesson: 7 },
-  { term: "Relevant", definition: "Closely connected or appropriate to what is being discussed", example: "Only include information that is relevant to your argument.", lesson: 7 },
-  { term: "Sufficient", definition: "Enough; adequate for a particular purpose", example: "Is there sufficient evidence to support your claim?", lesson: 7 },
-  { term: "Distinguish", definition: "To recognize or treat as different; to perceive a difference", example: "It's important to distinguish between facts and opinions.", lesson: 7 },
-  { term: "Integrate", definition: "To combine one thing with another so they become a whole", example: "The essay integrates quotes from the text to support its argument.", lesson: 7 },
+  { term: "Determine", definition: "To discover the facts about something; to establish exactly by research or calculation", example: "Scientists worked to determine the cause of the disease.", lesson: 7, difficulty: "medium", synonyms: ["discover", "ascertain", "establish"], antonyms: [] },
+  { term: "Relevant", definition: "Closely connected or appropriate to what is being discussed", example: "Only include information that is relevant to your argument.", lesson: 7, difficulty: "medium", synonyms: ["pertinent", "applicable", "related"], antonyms: ["irrelevant", "unrelated"] },
+  { term: "Sufficient", definition: "Enough; adequate for a particular purpose", example: "Is there sufficient evidence to support your claim?", lesson: 7, difficulty: "medium", synonyms: ["enough", "adequate", "ample"], antonyms: ["insufficient", "inadequate", "lacking"] },
+  { term: "Distinguish", definition: "To recognize or treat as different; to perceive a difference", example: "It's important to distinguish between facts and opinions.", lesson: 7, difficulty: "medium", synonyms: ["differentiate", "discern", "tell apart"], antonyms: ["confuse", "conflate"] },
+  { term: "Integrate", definition: "To combine one thing with another so they become a whole", example: "The essay integrates quotes from the text to support its argument.", lesson: 7, difficulty: "hard", synonyms: ["combine", "merge", "incorporate"], antonyms: ["separate", "divide", "isolate"] },
 
   // Lesson 8 - Standardized test vocabulary
-  { term: "Predominant", definition: "Present as the strongest or main element; having the greatest influence", example: "The predominant theme in the novel is the struggle for identity.", lesson: 8 },
-  { term: "Imply", definition: "To suggest something without directly stating it", example: "The author implies that the character is hiding something.", lesson: 8 },
-  { term: "Assertion", definition: "A confident and forceful statement of fact or belief", example: "The speaker made a bold assertion about climate change.", lesson: 8 },
-  { term: "Substantiate", definition: "To provide evidence to support or prove the truth of something", example: "You must substantiate your claims with textual evidence.", lesson: 8 },
-  { term: "Elicit", definition: "To draw out a response or reaction from someone", example: "The teacher's question was designed to elicit critical thinking.", lesson: 8 },
+  { term: "Predominant", definition: "Present as the strongest or main element; having the greatest influence", example: "The predominant theme in the novel is the struggle for identity.", lesson: 8, difficulty: "hard", synonyms: ["dominant", "primary", "chief"], antonyms: ["minor", "secondary", "subordinate"] },
+  { term: "Imply", definition: "To suggest something without directly stating it", example: "The author implies that the character is hiding something.", lesson: 8, difficulty: "medium", synonyms: ["suggest", "hint", "indicate"], antonyms: ["state", "declare", "express"] },
+  { term: "Assertion", definition: "A confident and forceful statement of fact or belief", example: "The speaker made a bold assertion about climate change.", lesson: 8, difficulty: "hard", synonyms: ["claim", "declaration", "statement"], antonyms: ["denial", "question"] },
+  { term: "Substantiate", definition: "To provide evidence to support or prove the truth of something", example: "You must substantiate your claims with textual evidence.", lesson: 8, difficulty: "hard", synonyms: ["verify", "confirm", "prove"], antonyms: ["disprove", "refute"] },
+  { term: "Elicit", definition: "To draw out a response or reaction from someone", example: "The teacher's question was designed to elicit critical thinking.", lesson: 8, difficulty: "hard", synonyms: ["evoke", "provoke", "extract"], antonyms: ["suppress", "stifle"] },
 ];
 
 export const literaryDevices: LiteraryDevice[] = [
