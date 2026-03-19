@@ -46,3 +46,11 @@
 - **Simplicity First**: Make every change as simple as possible. Impact minimal code.
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
+
+## HARD CONSTRAINT: QA Before Deploy
+- **DO NOT** mark any feature as complete until ALL buttons and functions are tested on the live site
+- Deploy QA agents via Chrome MCP to test every interactive element
+- QA agents must click every button, fill every form, test every navigation link
+- Any bug found must be fixed immediately, then re-tested
+- Loop: Test → Find bugs → Fix → Redeploy → Re-test → until ZERO bugs remain
+- **DO NOT STOP** until all buttons and functions are verified working with no errors
