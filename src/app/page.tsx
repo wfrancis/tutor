@@ -320,6 +320,21 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Tutor Admin Link */}
+      <div style={{ textAlign: "center", paddingTop: 8 }}>
+        <Link
+          href="/admin/upload"
+          style={{
+            color: "#64748b",
+            fontSize: "0.8rem",
+            textDecoration: "none",
+            fontWeight: 600,
+          }}
+        >
+          &#9997;&#65039; Tutor Dashboard
+        </Link>
+      </div>
     </div>
   );
 }

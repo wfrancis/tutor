@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { vocabularyWords, literaryDevices } from "@/data/lessons";
+import { loadData } from "@/lib/db";
 
 const client = new Anthropic();
 
@@ -8,6 +8,9 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { type, passage, passageContent, answers } = body;
+
+    const data = loadData();
+    const { literaryDevices, vocabWords } = data;
 
     let prompt = "";
 
@@ -42,7 +45,7 @@ PASSAGE: "${passage}"
 ${passageContent}
 
 VOCABULARY WORDS THE STUDENT IS LEARNING:
-${vocabularyWords.map((w) => `${w.term}: ${w.definition}`).join("\n")}
+${vocabWords.map((w) => `${w.term}: ${w.definition}`).join("\n")}
 
 Create questions covering:
 1. Main idea / central theme

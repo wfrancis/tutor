@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { vocabularyWords, VocabWord } from "@/data/lessons";
+import { vocabularyWords as defaultWords, VocabWord } from "@/data/lessons";
 import { useGameState } from "@/components/GameElements";
 
 // ── Types ──────────────────────────────────────────────
@@ -54,6 +54,16 @@ function starRating(score: number, total: number): number {
 // ── Component ──────────────────────────────────────────
 export default function VocabularyPage() {
   const { addEarnings, balanceCents } = useGameState();
+  const [vocabularyWords, setVocabularyWords] = useState<VocabWord[]>(defaultWords);
+
+  useEffect(() => {
+    fetch("/api/lessons")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.vocabWords?.length) setVocabularyWords(data.vocabWords);
+      })
+      .catch(() => {});
+  }, []);
 
   // Mode & filters
   const [mode, setMode] = useState<Mode>("flashcards");
@@ -96,13 +106,13 @@ export default function VocabularyPage() {
 
   const lessons = useMemo(
     () => Array.from(new Set(vocabularyWords.map((w) => w.lesson))).sort((a, b) => a - b),
-    []
+    [vocabularyWords]
   );
 
   const filteredWords = useMemo(() => {
     if (selectedLesson === null) return vocabularyWords;
     return vocabularyWords.filter((w) => w.lesson === selectedLesson);
-  }, [selectedLesson]);
+  }, [selectedLesson, vocabularyWords]);
 
   const currentCard = filteredWords[cardIndex];
 

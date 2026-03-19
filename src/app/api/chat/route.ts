@@ -1,32 +1,35 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { vocabularyWords, literaryDevices, readingPassages } from "@/data/lessons";
+import { loadData } from "@/lib/db";
 
 const client = new Anthropic();
 
-const SYSTEM_PROMPT = `You are an expert English tutor helping a middle school student named Cole prepare for standardized English tests (like the ISEE, SSAT, or state assessments). You are warm, encouraging, and patient.
+function buildSystemPrompt(): string {
+  const data = loadData();
+
+  return `You are an expert English tutor helping a middle school student named Cole prepare for standardized English tests (like the ISEE, SSAT, or state assessments). You are warm, encouraging, and patient.
 
 Your teaching is based on lessons from Cole's tutor Ann Kenny. Here is the content you should draw from:
 
-VOCABULARY WORDS (from 8 lessons):
-${vocabularyWords.map((w) => `- ${w.term}: ${w.definition}${w.example ? ` (Example: "${w.example}")` : ""}`).join("\n")}
+VOCABULARY WORDS (from ${[...new Set(data.vocabWords.map((w) => w.lesson))].length} lessons):
+${data.vocabWords.map((w) => `- ${w.term}: ${w.definition}${w.example ? ` (Example: "${w.example}")` : ""}`).join("\n")}
 
 LITERARY DEVICES:
-${literaryDevices.map((d) => `- ${d.name}: ${d.definition} (Example: ${d.example})`).join("\n")}
+${data.literaryDevices.map((d) => `- ${d.name}: ${d.definition} (Example: ${d.example})`).join("\n")}
 
 READING PASSAGES STUDIED:
-${readingPassages.map((p) => `- "${p.title}" (${p.topic})`).join("\n")}
+${data.readingPassages.map((p) => `- "${p.title}" (${p.topic})`).join("\n")}
 
 GUIDELINES:
-- Keep explanations clear and age-appropriate for a middle school student
-- Use encouraging language — celebrate correct answers and gently guide incorrect ones
-- When quizzing vocabulary, mix up the format: definitions, fill-in-the-blank, context clues, synonyms/antonyms
-- For reading comprehension, ask questions about main idea, supporting details, inference, author's purpose, and tone
-- For literary devices, give examples and ask Cole to identify them
-- Always explain WHY an answer is correct or incorrect
-- Relate content to standardized test formats when possible
-- Keep responses concise but thorough — aim for 2-4 paragraphs max
-- If Cole seems to be struggling, break things down into simpler steps`;
+- BE CONCISE. Keep responses SHORT — 2-3 sentences max for questions, 3-4 sentences max for feedback.
+- Ask only ONE question at a time. Wait for Cole to answer before asking the next.
+- Do NOT write long introductions or preambles. Jump straight to the question.
+- When starting a session, just say a quick greeting (1 sentence) then immediately ask the first question. No explanations of what you'll do.
+- Use encouraging language but keep it brief — "Nice!" or "Almost!" not full paragraphs of praise.
+- Mix up question formats: definitions, fill-in-the-blank, context clues, synonyms/antonyms, multiple choice.
+- When Cole answers wrong, briefly explain why and move on. Don't over-explain.
+- Always explain WHY an answer is correct or incorrect in 1-2 sentences.`;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +38,7 @@ export async function POST(req: NextRequest) {
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 1024,
-      system: SYSTEM_PROMPT,
+      system: buildSystemPrompt(),
       messages: messages.map((m: { role: string; content: string }) => ({
         role: m.role,
         content: m.content,

@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { readingPassages, literaryDevices, vocabularyWords } from "@/data/lessons";
+import {
+  readingPassages as defaultPassages,
+  literaryDevices as defaultDevices,
+  vocabularyWords as defaultVocab,
+  ReadingPassage,
+  LiteraryDevice,
+  VocabWord,
+} from "@/data/lessons";
 import { useGameState } from "@/components/GameElements";
 
 const PASSAGE_ICONS = ["📜", "💬", "🏛️", "🎵"];
@@ -11,11 +18,11 @@ const DIFFICULTY_MAP: Record<string, number> = {
   "Cultural Reading Comprehension": 2,
 };
 
-function highlightVocab(text: string, isPoetry: boolean) {
+function highlightVocab(text: string, isPoetry: boolean, words: VocabWord[]) {
   const vocabMap = new Map(
-    vocabularyWords.map((w) => [w.term.toLowerCase(), w.definition])
+    words.map((w) => [w.term.toLowerCase(), w.definition])
   );
-  const vocabTerms = vocabularyWords.map((w) => w.term);
+  const vocabTerms = words.map((w) => w.term);
   const pattern = new RegExp(
     `\\b(${vocabTerms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\b`,
     "gi"
@@ -86,6 +93,21 @@ function highlightVocab(text: string, isPoetry: boolean) {
 
 export default function ReadingPage() {
   const { addEarnings, balanceCents } = useGameState();
+  const [readingPassages, setReadingPassages] = useState<ReadingPassage[]>(defaultPassages);
+  const [literaryDevices, setLiteraryDevices] = useState<LiteraryDevice[]>(defaultDevices);
+  const [vocabularyWords, setVocabularyWords] = useState<VocabWord[]>(defaultVocab);
+
+  useEffect(() => {
+    fetch("/api/lessons")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.readingPassages?.length) setReadingPassages(data.readingPassages);
+        if (data.literaryDevices?.length) setLiteraryDevices(data.literaryDevices);
+        if (data.vocabWords?.length) setVocabularyWords(data.vocabWords);
+      })
+      .catch(() => {});
+  }, []);
+
   const [selectedPassage, setSelectedPassage] = useState<number | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [aiResponse, setAiResponse] = useState("");
@@ -447,7 +469,7 @@ export default function ReadingPage() {
                   border: "1px solid #f0ede8",
                 }}
               >
-                {highlightVocab(passage.content, !!isPoetry)}
+                {highlightVocab(passage.content, !!isPoetry, vocabularyWords)}
               </div>
 
               <p className="mt-3 text-[11px] font-medium" style={{ color: "#64748b" }}>
@@ -561,7 +583,7 @@ export default function ReadingPage() {
                         fontFamily: "system-ui, sans-serif",
                         backgroundColor: answers[q.key] ? "#f0fdf9" : "#fafafa",
                         lineHeight: "1.6",
-                        color: "#1e293b",
+                        color: "#0f172a",
                       }}
                       placeholder="Type your answer here..."
                       value={answers[q.key] || ""}

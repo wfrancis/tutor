@@ -17,7 +17,7 @@ const PRACTICE_MODES = [
     time: "10 min",
     color: "#00d4aa",
     prompt:
-      "Help me practice vocabulary words from my tutoring lessons. Quiz me on definitions, usage in context, and help me use them in sentences.",
+      "Help me practice vocabulary words from my tutoring lessons. Quiz me on definitions, usage in context, and help me use them in sentences. Ask me ONE question at a time and wait for my answer before moving on.",
   },
   {
     id: "reading",
@@ -28,7 +28,7 @@ const PRACTICE_MODES = [
     time: "15 min",
     color: "#1e3a5f",
     prompt:
-      "Give me a short reading passage appropriate for standardized test prep and ask me comprehension questions about it. Topics can include history, science, literature, or culture.",
+      "Give me a short reading passage appropriate for standardized test prep and ask me ONE comprehension question about it. Wait for my answer before asking the next question. Topics can include history, science, literature, or culture.",
   },
   {
     id: "literary",
@@ -39,7 +39,7 @@ const PRACTICE_MODES = [
     time: "10 min",
     color: "#ff6b35",
     prompt:
-      "Help me practice identifying and understanding literary devices like metaphor, simile, imagery, personification, alliteration, hyperbole, and onomatopoeia. Give me examples and quiz me.",
+      "Help me practice identifying and understanding literary devices like metaphor, simile, imagery, personification, alliteration, hyperbole, and onomatopoeia. Give me ONE example at a time and quiz me on it. Wait for my answer before moving on.",
   },
   {
     id: "grammar",
@@ -50,7 +50,7 @@ const PRACTICE_MODES = [
     time: "10 min",
     color: "#7c3aed",
     prompt:
-      "Help me practice grammar and writing skills for standardized tests. Cover things like sentence structure, punctuation, word choice, and paragraph organization.",
+      "Help me practice grammar and writing skills for standardized tests. Cover things like sentence structure, punctuation, word choice, and paragraph organization. Ask me ONE question at a time and wait for my answer before moving on.",
   },
   {
     id: "test",
@@ -61,7 +61,7 @@ const PRACTICE_MODES = [
     time: "20 min",
     color: "#dc2626",
     prompt:
-      "Give me practice questions in the style of standardized English tests. Include multiple choice reading comprehension, vocabulary in context, and text analysis questions.",
+      "Give me ONE practice question at a time in the style of standardized English tests. It can be multiple choice reading comprehension, vocabulary in context, or text analysis. Wait for my answer before giving the next question.",
   },
 ];
 
@@ -159,7 +159,7 @@ export default function PracticePage() {
             >
               Choose Your Mission
             </h1>
-            <p className="text-sm" style={{ color: "#64748b" }}>
+            <p className="text-sm" style={{ color: "#475569" }}>
               Pick a practice mode and chat with your AI tutor
             </p>
           </div>
@@ -493,7 +493,8 @@ export default function PracticePage() {
                 style={{
                   borderColor: input.trim() ? "#00d4aa" : "#e2e8f0",
                   backgroundColor: "white",
-                  color: "#1e293b",
+                  color: "#0f172a",
+                  caretColor: "#0f172a",
                 }}
                 disabled={loading}
               />
