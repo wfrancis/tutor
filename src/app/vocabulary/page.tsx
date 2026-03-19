@@ -291,6 +291,7 @@ export default function VocabularyPage() {
     setSelectedLesson(l);
     setCardIndex(0);
     setFlipped(false);
+    setHighScore(0);
     if (mode === "quiz") startQuiz();
     if (mode === "fill") startFill();
   }
