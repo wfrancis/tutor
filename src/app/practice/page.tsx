@@ -92,9 +92,10 @@ export default function PracticePage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  async function sendMessage(content: string) {
+  async function sendMessage(content: string, resetMessages?: boolean) {
     const userMessage: Message = { role: "user", content };
-    const newMessages = [...messages, userMessage];
+    const baseMessages = resetMessages ? [] : messages;
+    const newMessages = [...baseMessages, userMessage];
     setMessages(newMessages);
     setInput("");
     setLoading(true);
@@ -119,8 +120,7 @@ export default function PracticePage() {
 
   function startMode(mode: (typeof PRACTICE_MODES)[0]) {
     setSelectedMode(mode.id);
-    setMessages([]);
-    sendMessage(mode.prompt);
+    sendMessage(mode.prompt, true);
   }
 
   function clearChat() {

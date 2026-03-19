@@ -45,8 +45,9 @@ export async function POST(req: NextRequest) {
     const text = response.content[0].type === "text" ? response.content[0].text : "";
 
     return NextResponse.json({ response: text });
-  } catch (error) {
-    console.error("Chat API error:", error);
-    return NextResponse.json({ response: "Sorry, I had trouble generating a response. Please try again." }, { status: 500 });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error("Chat API error:", errMsg);
+    return NextResponse.json({ response: `Sorry, I had trouble generating a response. Error: ${errMsg}` }, { status: 500 });
   }
 }
