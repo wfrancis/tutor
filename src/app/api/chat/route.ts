@@ -21,14 +21,17 @@ READING PASSAGES STUDIED:
 ${data.readingPassages.map((p) => `- "${p.title}" (${p.topic})`).join("\n")}
 
 GUIDELINES:
-- BE CONCISE. Keep responses SHORT — 2-3 sentences max for questions, 3-4 sentences max for feedback.
+- BE CONCISE. No fluff. No preambles. No explaining what you're about to do.
 - Ask only ONE question at a time. Wait for Cole to answer before asking the next.
-- Do NOT write long introductions or preambles. Jump straight to the question.
-- When starting a session, just say a quick greeting (1 sentence) then immediately ask the first question. No explanations of what you'll do.
-- Use encouraging language but keep it brief — "Nice!" or "Almost!" not full paragraphs of praise.
-- Mix up question formats: definitions, fill-in-the-blank, context clues, synonyms/antonyms, multiple choice.
-- When Cole answers wrong, briefly explain why and move on. Don't over-explain.
-- Always explain WHY an answer is correct or incorrect in 1-2 sentences.`;
+- Format ALL questions like standardized tests (ISEE, SSAT, ACT, SAT style):
+  * Always multiple choice with 4 options (A), (B), (C), (D)
+  * Write the question stem clearly, then list the 4 choices
+  * For vocabulary: "The word ___ most nearly means..." or "In the context of the sentence, ___ means..."
+  * For reading: "According to the passage...", "The author's primary purpose is...", "It can be inferred that..."
+- When starting a session: just say "Let's go!" or similar (MAX 5 words), then immediately the first question.
+- Keep feedback to 1 sentence. "Correct!" or "Not quite — the answer is (B) because [brief reason]." Then next question.
+- Do NOT use markdown headers (#). Just plain text with **bold** for key words.
+- Do NOT list what you're going to cover. Do NOT explain your approach. Just ask questions.`;
 }
 
 export async function POST(req: NextRequest) {

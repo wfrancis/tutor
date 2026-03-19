@@ -195,7 +195,7 @@ export default function AdminUploadPage() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }}>&#9997;&#65039;</span>
+            <span style={{ fontSize: 24 }}>{"\u270D\uFE0F"}</span>
             <h1
               style={{
                 fontSize: "clamp(1rem, 4vw, 1.5rem)",
@@ -218,7 +218,7 @@ export default function AdminUploadPage() {
               fontWeight: 600,
             }}
           >
-            &#8592; Back to App
+            {"\u2190"} Back to App
           </a>
         </div>
       </header>
@@ -253,7 +253,7 @@ export default function AdminUploadPage() {
                 color: activeTab === tab ? "#0b1120" : "#94a3b8",
               }}
             >
-              {tab === "upload" ? "&#128228; Upload Lesson" : `&#128218; Manage Content (${existing?.stats.totalVocab || 0})`}
+              {tab === "upload" ? "\uD83D\uDCE4 Upload Lesson" : `\uD83D\uDCDA Manage Content (${existing?.stats.totalVocab || 0})`}
             </button>
           ))}
         </div>
@@ -299,7 +299,7 @@ export default function AdminUploadPage() {
                 style={{ display: "none" }}
               />
               <div style={{ fontSize: 48, marginBottom: 12 }}>
-                {file ? "&#9989;" : "&#128196;"}
+                {file ? "\u2705" : "\uD83D\uDCC4"}
               </div>
               <p
                 style={{
@@ -386,8 +386,8 @@ export default function AdminUploadPage() {
                   }}
                 >
                   {parsing
-                    ? "&#129302; AI is analyzing your file..."
-                    : "&#9889; Analyze with AI"}
+                    ? "\uD83E\uDD16 AI is analyzing your file..."
+                    : "\u26A1 Analyze with AI"}
                 </button>
               </div>
             )}
@@ -472,7 +472,7 @@ export default function AdminUploadPage() {
                     gap: 8,
                   }}
                 >
-                  &#128270; AI Extraction Preview
+                  {"\uD83D\uDD0E"} AI Extraction Preview
                 </h2>
                 <p style={{ color: "#94a3b8", margin: 0, fontSize: 14 }}>
                   Review what the AI found. These items will be added to Lesson{" "}
@@ -483,7 +483,7 @@ export default function AdminUploadPage() {
                 {vocabPreview.length > 0 && (
                   <PreviewSection
                     title={`Vocabulary Words (${vocabPreview.length})`}
-                    icon="&#128218;"
+                    icon={"\uD83D\uDCDA"}
                     color="#00d4aa"
                   >
                     <div
@@ -558,7 +558,7 @@ export default function AdminUploadPage() {
                                 fontStyle: "italic",
                               }}
                             >
-                              &quot;{w.example}&quot;
+                              {'"'}{w.example}{'"'}
                             </p>
                           )}
                           <button
@@ -576,7 +576,7 @@ export default function AdminUploadPage() {
                               fontWeight: 600,
                             }}
                           >
-                            &#10005; Remove
+                            {"\u2715"} Remove
                           </button>
                         </div>
                       ))}
@@ -588,7 +588,7 @@ export default function AdminUploadPage() {
                 {passagePreview.length > 0 && (
                   <PreviewSection
                     title={`Reading Passages (${passagePreview.length})`}
-                    icon="&#128214;"
+                    icon={"\uD83D\uDCD6"}
                     color="#7c3aed"
                   >
                     {passagePreview.map((p, i) => (
@@ -653,7 +653,7 @@ export default function AdminUploadPage() {
                             fontWeight: 600,
                           }}
                         >
-                          &#10005; Remove
+                          {"\u2715"} Remove
                         </button>
                       </div>
                     ))}
@@ -664,7 +664,7 @@ export default function AdminUploadPage() {
                 {devicePreview.length > 0 && (
                   <PreviewSection
                     title={`Literary Devices (${devicePreview.length})`}
-                    icon="&#127917;"
+                    icon={"\uD83C\uDFAD"}
                     color="#ff6b35"
                   >
                     {devicePreview.map((d, i) => (
@@ -713,7 +713,7 @@ export default function AdminUploadPage() {
                             fontWeight: 600,
                           }}
                         >
-                          &#10005; Remove
+                          {"\u2715"} Remove
                         </button>
                       </div>
                     ))}
@@ -744,7 +744,7 @@ export default function AdminUploadPage() {
                 >
                   {saving
                     ? "Saving..."
-                    : `&#9989; Save to Lesson ${lesson}`}
+                    : `\u2705 Save to Lesson ${lesson}`}
                 </button>
               </div>
             )}
@@ -882,7 +882,7 @@ export default function AdminUploadPage() {
                       flexShrink: 0,
                     }}
                   >
-                    &#10005;
+                    {"\u2715"}
                   </button>
                 </div>
               )}
@@ -940,7 +940,7 @@ export default function AdminUploadPage() {
                       flexShrink: 0,
                     }}
                   >
-                    &#10005;
+                    {"\u2715"}
                   </button>
                 </div>
               )}
@@ -1001,7 +1001,7 @@ export default function AdminUploadPage() {
                       flexShrink: 0,
                     }}
                   >
-                    &#10005;
+                    {"\u2715"}
                   </button>
                 </div>
               )}
@@ -1044,7 +1044,7 @@ function PreviewSection({
           gap: 6,
         }}
       >
-        <span dangerouslySetInnerHTML={{ __html: icon }} /> {title}
+        <span>{icon}</span> {title}
       </h3>
       {children}
     </div>

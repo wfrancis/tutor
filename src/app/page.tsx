@@ -332,7 +332,7 @@ export default function Home() {
             fontWeight: 600,
           }}
         >
-          &#9997;&#65039; Tutor Dashboard
+          {"\u270D\uFE0F"} Tutor Dashboard
         </Link>
       </div>
     </div>
