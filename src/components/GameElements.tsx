@@ -230,13 +230,13 @@ export function StreakBadge({ days: daysProp }: { days?: number } = {}) {
    ============================================= */
 
 const MILESTONES = [
-  { threshold: 0, title: "Getting Started" },
-  { threshold: 100, title: "First Dollar!" },
-  { threshold: 500, title: "$5 Club" },
-  { threshold: 1000, title: "$10 Earner" },
-  { threshold: 2500, title: "$25 Pro" },
+  { threshold: 0, title: "Rookie Season" },
+  { threshold: 100, title: "First Assist!" },
+  { threshold: 500, title: "$5 All-Star" },
+  { threshold: 1000, title: "$10 Captain" },
+  { threshold: 2500, title: "$25 MVP" },
   { threshold: 5000, title: "$50 Legend" },
-  { threshold: 10000, title: "$100 Master" },
+  { threshold: 10000, title: "$100 Hall of Fame" },
 ];
 
 export function MilestoneBadge({
@@ -481,8 +481,8 @@ export function Celebration() {
       </div>
       {/* Center text */}
       <div className="celebration-overlay">
-        <div className="celebration-text">PERFECT!</div>
-        <div className="celebration-subtitle">You nailed every question!</div>
+        <div className="celebration-text">HAT TRICK!</div>
+        <div className="celebration-subtitle">You crushed every question!</div>
       </div>
     </>
   );

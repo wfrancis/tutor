@@ -3,13 +3,13 @@ import "./globals.css";
 import { NavWrapper } from "@/components/NavWrapper";
 
 export const metadata: Metadata = {
-  title: "English Quest — Cole's Training Ground",
+  title: "Arctic Quest — Cole's Training Ground",
   description:
-    "AI-powered English practice for standardized test prep — level up your vocab, reading, and writing skills.",
+    "AI-powered English practice for standardized test prep — conquer vocab, reading, and writing like an Arctic explorer.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "English Quest",
+    title: "Arctic Quest",
   },
 };
 

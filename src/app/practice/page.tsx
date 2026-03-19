@@ -10,58 +10,58 @@ interface Message {
 const PRACTICE_MODES = [
   {
     id: "vocab",
-    icon: "\uD83D\uDCDA",
-    label: "Vocabulary Practice",
-    description: "Master new words, definitions, and usage in context",
+    icon: "\uD83C\uDFD2",
+    label: "Vocab Power Play",
+    description: "Score goals with definitions, context clues, and word usage",
     difficulty: "Medium",
     time: "10 min",
     color: "#00d4aa",
     prompt:
-      "Help me practice vocabulary words from my tutoring lessons. Quiz me on definitions, usage in context, and help me use them in sentences. Ask me ONE question at a time and wait for my answer before moving on.",
+      "Help me practice vocabulary words from my tutoring lessons. Quiz me on definitions, usage in context, and help me use them in sentences. Use examples from hockey, fishing, the outdoors, and Arctic exploration when possible. Ask me ONE question at a time and wait for my answer before moving on.",
   },
   {
     id: "reading",
-    icon: "\uD83D\uDCD6",
-    label: "Reading Comprehension",
-    description: "Practice understanding passages and answering questions",
+    icon: "\u2744\uFE0F",
+    label: "Reading Expedition",
+    description: "Explore passages about nature, adventure, and more",
     difficulty: "Medium",
     time: "15 min",
     color: "#1e3a5f",
     prompt:
-      "Give me a short reading passage appropriate for standardized test prep and ask me ONE comprehension question about it. Wait for my answer before asking the next question. Topics can include history, science, literature, or culture.",
+      "Give me a short reading passage appropriate for standardized test prep and ask me ONE comprehension question about it. Wait for my answer before asking the next question. When possible, choose topics I'd enjoy: Arctic exploration, wildlife, hockey history, fishing, outdoor adventure, or nature/science.",
   },
   {
     id: "literary",
     icon: "\uD83C\uDFAD",
     label: "Literary Devices",
-    description: "Identify metaphors, similes, imagery, and more",
+    description: "Spot metaphors, similes, and imagery in the wild",
     difficulty: "Hard",
     time: "10 min",
     color: "#ff6b35",
     prompt:
-      "Help me practice identifying and understanding literary devices like metaphor, simile, imagery, personification, alliteration, hyperbole, and onomatopoeia. Give me ONE example at a time and quiz me on it. Wait for my answer before moving on.",
+      "Help me practice identifying and understanding literary devices like metaphor, simile, imagery, personification, alliteration, hyperbole, and onomatopoeia. Use examples from sports, nature, and adventure when possible. Give me ONE example at a time and quiz me on it. Wait for my answer before moving on.",
   },
   {
     id: "grammar",
     icon: "\u270D\uFE0F",
     label: "Grammar & Writing",
-    description: "Sharpen sentence structure, punctuation, and word choice",
+    description: "Sharpen your sentences like sharpening your skates",
     difficulty: "Medium",
     time: "10 min",
     color: "#7c3aed",
     prompt:
-      "Help me practice grammar and writing skills for standardized tests. Cover things like sentence structure, punctuation, word choice, and paragraph organization. Ask me ONE question at a time and wait for my answer before moving on.",
+      "Help me practice grammar and writing skills for standardized tests. Cover things like sentence structure, punctuation, word choice, and paragraph organization. Use sports and nature themed sentences when possible. Ask me ONE question at a time and wait for my answer before moving on.",
   },
   {
     id: "test",
     icon: "\uD83D\uDCDD",
-    label: "Test Prep Questions",
-    description: "Simulate real standardized test questions",
+    label: "Test Day Shootout",
+    description: "Face real standardized test questions — game time",
     difficulty: "Hard",
     time: "20 min",
     color: "#dc2626",
     prompt:
-      "Give me ONE practice question at a time in the style of standardized English tests. It can be multiple choice reading comprehension, vocabulary in context, or text analysis. Wait for my answer before giving the next question.",
+      "Give me ONE practice question at a time in the style of standardized English tests (ISEE, SSAT, ACT, SAT). It can be multiple choice reading comprehension, vocabulary in context, or text analysis. When possible, use content related to hockey, nature, Arctic exploration, or outdoor adventure. Wait for my answer before giving the next question.",
   },
 ];
 
@@ -71,7 +71,8 @@ const QUICK_REPLIES = [
   "Next question",
   "Harder please",
   "Give me a hint",
-  "I don't understand",
+  "I don't get it",
+  "Hat trick! 3 more",
 ];
 
 const DIFFICULTY_DOTS: Record<string, number> = {
@@ -157,10 +158,10 @@ export default function PracticePage() {
               className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2"
               style={{ color: "#1e3a5f" }}
             >
-              Choose Your Mission
+              Choose Your Drill
             </h1>
             <p className="text-sm" style={{ color: "#475569" }}>
-              Pick a practice mode and chat with your AI tutor
+              Pick a practice mode and go 1-on-1 with your AI coach
             </p>
           </div>
 

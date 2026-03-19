@@ -18,8 +18,8 @@ function DesktopNav() {
     <nav className="desktop-nav">
       <div className="desktop-nav-inner">
         <Link href="/" className="nav-logo">
-          <span className="nav-logo-icon">⚔️</span>
-          <span className="nav-logo-text">English Quest</span>
+          <span className="nav-logo-icon">🏔️</span>
+          <span className="nav-logo-text">Arctic Quest</span>
         </Link>
 
         <div className="desktop-nav-links">
@@ -48,8 +48,8 @@ function MobileTopBar() {
   return (
     <div className="mobile-top-bar">
       <Link href="/" className="nav-logo">
-        <span className="nav-logo-icon">⚔️</span>
-        <span className="nav-logo-text">English Quest</span>
+        <span className="nav-logo-icon">🏔️</span>
+        <span className="nav-logo-text">Arctic Quest</span>
       </Link>
       <div className="mobile-top-stats">
         <StreakBadge />

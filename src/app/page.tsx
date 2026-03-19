@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useGameState, CashInModal } from "@/components/GameElements";
 
 const MILESTONES = [
-  { threshold: 0, title: "Getting Started" },
-  { threshold: 100, title: "First Dollar!" },
-  { threshold: 500, title: "$5 Club" },
-  { threshold: 1000, title: "$10 Earner" },
-  { threshold: 2500, title: "$25 Pro" },
+  { threshold: 0, title: "Rookie Season" },
+  { threshold: 100, title: "First Assist!" },
+  { threshold: 500, title: "$5 All-Star" },
+  { threshold: 1000, title: "$10 Captain" },
+  { threshold: 2500, title: "$25 MVP" },
   { threshold: 5000, title: "$50 Legend" },
-  { threshold: 10000, title: "$100 Master" },
+  { threshold: 10000, title: "$100 Hall of Fame" },
 ];
 
 function getMilestone(totalCents: number) {
@@ -36,12 +36,21 @@ const skills = [
   { name: "Context Clues", progress: 35, icon: "\uD83D\uDD0E" },
 ];
 
+// Rotating greetings themed to Cole's interests
+const GREETINGS = [
+  { text: "Hey Cole!", emoji: "\uD83C\uDFD2" },           // hockey stick
+  { text: "What's up Cole!", emoji: "\uD83C\uDFA3" },     // fishing
+  { text: "Let's go Cole!", emoji: "\uD83C\uDFBF" },      // skiing
+  { text: "Game time Cole!", emoji: "\uD83E\uDD85" },     // eagle
+  { text: "Hey champ!", emoji: "\uD83D\uDC3B\u200D\u2744\uFE0F" }, // polar bear
+];
+
 const missions = [
-  { title: "Vocab Speed Round", path: "/vocabulary", type: "vocab", icon: "\uD83D\uDCDA" },
-  { title: "Poetry Deep Dive", path: "/reading", type: "reading", icon: "\uD83D\uDCD6" },
-  { title: "AI Grammar Battle", path: "/practice", type: "practice", icon: "\uD83E\uDD16" },
-  { title: "Context Clue Challenge", path: "/vocabulary", type: "vocab", icon: "\uD83D\uDD0E" },
-  { title: "Reading Blitz", path: "/reading", type: "reading", icon: "\uD83D\uDCD6" },
+  { title: "Vocab Hat Trick", path: "/vocabulary", type: "vocab", icon: "\uD83C\uDFD2", desc: "Score 3 vocab wins in a row" },
+  { title: "Arctic Reading Expedition", path: "/reading", type: "reading", icon: "\u2744\uFE0F", desc: "Conquer a reading passage" },
+  { title: "AI Shootout", path: "/practice", type: "practice", icon: "\uD83E\uDD16", desc: "Go 1-on-1 with the AI tutor" },
+  { title: "Context Clue Fishing", path: "/vocabulary", type: "vocab", icon: "\uD83C\uDFA3", desc: "Reel in word meanings from context" },
+  { title: "Reading Power Play", path: "/reading", type: "reading", icon: "\uD83D\uDCD6", desc: "Answer questions under pressure" },
 ];
 
 function getDailyMission() {
@@ -75,9 +84,9 @@ export default function Home() {
         <div className="hero-content">
           <div className="hero-greeting">
             <h1 className="hero-title">
-              Hey Cole! <span className="hero-wave">{"\uD83D\uDC4B"}</span>
+              {(() => { const g = GREETINGS[new Date().getDay() % GREETINGS.length]; return <>{g.text} <span className="hero-wave">{g.emoji}</span></>; })()}
             </h1>
-            <p className="hero-subtitle">Ready for today&apos;s quest?</p>
+            <p className="hero-subtitle">Ready to hit the ice?</p>
           </div>
 
           <div className="hero-stats-row">
@@ -152,7 +161,7 @@ export default function Home() {
             {dailyMission.title}
           </h2>
           <p className="daily-challenge-desc">
-            Complete today&apos;s challenge to earn bonus cash and keep your streak going!
+            {dailyMission.desc || "Complete today\u0027s challenge to earn bonus cash and keep your streak going!"}
           </p>
           <div className="daily-challenge-footer">
             <div className="daily-challenge-reward">
@@ -174,16 +183,16 @@ export default function Home() {
           {/* Vocab Quest */}
           <Link href="/vocabulary" className="quest-card quest-vocab">
             <div className="quest-card-header">
-              <span className="quest-icon">{"\uD83D\uDCDA"}</span>
+              <span className="quest-icon">{"\uD83C\uDFD2"}</span>
               <div className="quest-difficulty">
                 <span className="quest-star filled">{"\u2605"}</span>
                 <span className="quest-star filled">{"\u2605"}</span>
                 <span className="quest-star empty">{"\u2605"}</span>
               </div>
             </div>
-            <h3 className="quest-title">Vocab Quest</h3>
+            <h3 className="quest-title">Vocab Breakaway</h3>
             <p className="quest-desc">
-              Master vocabulary from your lessons with flashcards and quizzes
+              Master words like a power play — flashcards, quizzes, and hat tricks
             </p>
             <div className="quest-progress">
               <div className="quest-progress-info">
@@ -199,22 +208,22 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="quest-cta">Enter Quest {"\u2192"}</div>
+            <div className="quest-cta">Hit the Ice {"\u2192"}</div>
           </Link>
 
           {/* Reading Arena */}
           <Link href="/reading" className="quest-card quest-reading">
             <div className="quest-card-header">
-              <span className="quest-icon">{"\uD83D\uDCD6"}</span>
+              <span className="quest-icon">{"\u2744\uFE0F"}</span>
               <div className="quest-difficulty">
                 <span className="quest-star filled">{"\u2605"}</span>
                 <span className="quest-star filled">{"\u2605"}</span>
                 <span className="quest-star filled">{"\u2605"}</span>
               </div>
             </div>
-            <h3 className="quest-title">Reading Arena</h3>
+            <h3 className="quest-title">Reading Expedition</h3>
             <p className="quest-desc">
-              Tackle passages and poems — poetry, history, and culture
+              Explore passages and poems — from Arctic adventures to poetry
             </p>
             <div className="quest-progress">
               <div className="quest-progress-info">
@@ -225,7 +234,7 @@ export default function Home() {
                 <div className="xp-bar-fill" style={{ width: "30%" }} />
               </div>
             </div>
-            <div className="quest-cta">Enter Arena {"\u2192"}</div>
+            <div className="quest-cta">Explore {"\u2192"}</div>
           </Link>
 
           {/* AI Battle */}
@@ -238,9 +247,9 @@ export default function Home() {
                 <span className="quest-star filled">{"\u2605"}</span>
               </div>
             </div>
-            <h3 className="quest-title">AI Battle</h3>
+            <h3 className="quest-title">AI Shootout</h3>
             <p className="quest-desc">
-              Challenge the AI Tutor — it adapts to your skill level
+              Go 1-on-1 with the AI Tutor — it adapts like a tough opponent
             </p>
             <div className="quest-progress">
               <div className="quest-progress-info">
@@ -251,7 +260,7 @@ export default function Home() {
                 <div className="xp-bar-fill" style={{ width: "50%" }} />
               </div>
             </div>
-            <div className="quest-cta">Start Battle {"\u2192"}</div>
+            <div className="quest-cta">Face Off {"\u2192"}</div>
           </Link>
         </div>
       </section>
