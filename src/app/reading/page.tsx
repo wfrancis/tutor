@@ -561,6 +561,7 @@ export default function ReadingPage() {
                         fontFamily: "system-ui, sans-serif",
                         backgroundColor: answers[q.key] ? "#f0fdf9" : "#fafafa",
                         lineHeight: "1.6",
+                        color: "#1e293b",
                       }}
                       placeholder="Type your answer here..."
                       value={answers[q.key] || ""}

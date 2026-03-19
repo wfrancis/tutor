@@ -493,6 +493,7 @@ export default function PracticePage() {
                 style={{
                   borderColor: input.trim() ? "#00d4aa" : "#e2e8f0",
                   backgroundColor: "white",
+                  color: "#1e293b",
                 }}
                 disabled={loading}
               />
