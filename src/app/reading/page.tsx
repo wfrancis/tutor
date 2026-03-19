@@ -188,7 +188,7 @@ export default function ReadingPage() {
               <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: "#1e3a5f" }}>
                 Reading Quest
               </h1>
-              <p className="text-sm mt-1" style={{ color: "#64748b" }}>
+              <p className="text-sm mt-1" style={{ color: "#b0bec5" }}>
                 Choose a passage to start your mission
               </p>
             </div>
@@ -308,14 +308,14 @@ export default function ReadingPage() {
                     >
                       {p.topic}
                     </span>
-                    <span className="text-xs font-medium" style={{ color: "#94a3b8" }}>
+                    <span className="text-xs font-medium" style={{ color: "#b0bec5" }}>
                       Lesson {p.lesson}
                     </span>
                   </div>
 
                   {/* Difficulty stars */}
                   <div className="flex items-center gap-0.5 relative">
-                    <span className="text-[10px] font-semibold mr-2" style={{ color: "#94a3b8" }}>
+                    <span className="text-[10px] font-semibold mr-2" style={{ color: "#b0bec5" }}>
                       Difficulty
                     </span>
                     {difficultyStars(p.topic)}
@@ -419,7 +419,7 @@ export default function ReadingPage() {
                 >
                   {passage.topic}
                 </span>
-                <span className="text-xs font-medium" style={{ color: "#94a3b8" }}>
+                <span className="text-xs font-medium" style={{ color: "#b0bec5" }}>
                   Lesson {passage.lesson}
                 </span>
                 <div className="flex items-center gap-0.5 ml-auto">
@@ -450,7 +450,7 @@ export default function ReadingPage() {
                 {highlightVocab(passage.content, !!isPoetry)}
               </div>
 
-              <p className="mt-3 text-[11px] font-medium" style={{ color: "#94a3b8" }}>
+              <p className="mt-3 text-[11px] font-medium" style={{ color: "#b0bec5" }}>
                 <span style={{ color: "#00d4aa" }}>&#9679;</span> Hover on{" "}
                 <span style={{ color: "#0d7a65", borderBottom: "2px dotted #00d4aa" }}>
                   highlighted words
@@ -491,7 +491,7 @@ export default function ReadingPage() {
                         <p className="text-xs mt-0.5 leading-relaxed" style={{ color: "#334155" }}>
                           {d.definition}
                         </p>
-                        <p className="text-[11px] mt-1.5 italic" style={{ color: "#64748b" }}>
+                        <p className="text-[11px] mt-1.5 italic" style={{ color: "#b0bec5" }}>
                           e.g. {d.example}
                         </p>
                       </div>
@@ -517,7 +517,7 @@ export default function ReadingPage() {
                   <h3 className="font-extrabold text-lg" style={{ color: "#1e3a5f" }}>
                     Comprehension Questions
                   </h3>
-                  <p className="text-xs" style={{ color: "#94a3b8" }}>
+                  <p className="text-xs" style={{ color: "#b0bec5" }}>
                     Answer all three to earn +$0.15
                   </p>
                 </div>
@@ -629,7 +629,7 @@ export default function ReadingPage() {
                     <h3 className="font-extrabold text-lg" style={{ color: "#1e3a5f" }}>
                       AI Tutor Feedback
                     </h3>
-                    <p className="text-xs font-medium" style={{ color: "#64748b" }}>
+                    <p className="text-xs font-medium" style={{ color: "#b0bec5" }}>
                       Based on your answers
                     </p>
                   </div>
@@ -667,7 +667,7 @@ export default function ReadingPage() {
                     <h3 className="font-extrabold text-lg" style={{ color: "#1e3a5f" }}>
                       Practice Test Questions
                     </h3>
-                    <p className="text-xs font-medium" style={{ color: "#64748b" }}>
+                    <p className="text-xs font-medium" style={{ color: "#b0bec5" }}>
                       Multiple choice questions based on the passage
                     </p>
                   </div>
@@ -724,7 +724,7 @@ export default function ReadingPage() {
                         </p>
                         <p
                           className="text-[11px] mt-1.5 italic px-2 py-1.5 rounded-lg"
-                          style={{ color: "#64748b", backgroundColor: "#f8fafc" }}
+                          style={{ color: "#b0bec5", backgroundColor: "#f8fafc" }}
                         >
                           e.g. {d.example}
                         </p>

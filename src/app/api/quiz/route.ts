@@ -60,7 +60,7 @@ Make sure questions are appropriate for middle school level and aligned with sta
     }
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
+      model: "claude-haiku-4-5-20250414",
       max_tokens: 1500,
       messages: [{ role: "user", content: prompt }],
     });

@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const { messages } = await req.json();
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
+      model: "claude-haiku-4-5-20250414",
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: messages.map((m: { role: string; content: string }) => ({
