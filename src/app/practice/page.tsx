@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import type { ReactNode } from "react";
 
 interface Message {
   role: "user" | "assistant";
@@ -16,6 +17,7 @@ const PRACTICE_MODES = [
     difficulty: "Medium",
     time: "10 min",
     color: "#00d4aa",
+    glow: "rgba(0, 212, 170, 0.3)",
     prompt:
       "Help me practice vocabulary words from my tutoring lessons. Quiz me on definitions, usage in context, and help me use them in sentences. Use examples from hockey, fishing, the outdoors, and Arctic exploration when possible. Ask me ONE question at a time and wait for my answer before moving on.",
   },
@@ -26,7 +28,8 @@ const PRACTICE_MODES = [
     description: "Explore passages about nature, adventure, and more",
     difficulty: "Medium",
     time: "15 min",
-    color: "#1e3a5f",
+    color: "#3b82f6",
+    glow: "rgba(59, 130, 246, 0.3)",
     prompt:
       "Give me a short reading passage appropriate for standardized test prep and ask me ONE comprehension question about it. Wait for my answer before asking the next question. When possible, choose topics I'd enjoy: Arctic exploration, wildlife, hockey history, fishing, outdoor adventure, or nature/science.",
   },
@@ -38,6 +41,7 @@ const PRACTICE_MODES = [
     difficulty: "Hard",
     time: "10 min",
     color: "#ff6b35",
+    glow: "rgba(255, 107, 53, 0.3)",
     prompt:
       "Help me practice identifying and understanding literary devices like metaphor, simile, imagery, personification, alliteration, hyperbole, and onomatopoeia. Use examples from sports, nature, and adventure when possible. Give me ONE example at a time and quiz me on it. Wait for my answer before moving on.",
   },
@@ -49,30 +53,32 @@ const PRACTICE_MODES = [
     difficulty: "Medium",
     time: "10 min",
     color: "#7c3aed",
+    glow: "rgba(124, 58, 237, 0.3)",
     prompt:
       "Help me practice grammar and writing skills for standardized tests. Cover things like sentence structure, punctuation, word choice, and paragraph organization. Use sports and nature themed sentences when possible. Ask me ONE question at a time and wait for my answer before moving on.",
   },
   {
     id: "test",
-    icon: "\uD83D\uDCDD",
+    icon: "\uD83C\uDFAF",
     label: "Test Day Shootout",
-    description: "Face real standardized test questions — game time",
+    description: "Face real standardized test questions \u2014 game time",
     difficulty: "Hard",
     time: "20 min",
-    color: "#dc2626",
+    color: "#ef4444",
+    glow: "rgba(239, 68, 68, 0.3)",
     prompt:
       "Give me ONE practice question at a time in the style of standardized English tests (ISEE, SSAT, ACT, SAT). It can be multiple choice reading comprehension, vocabulary in context, or text analysis. When possible, use content related to hockey, nature, Arctic exploration, or outdoor adventure. Wait for my answer before giving the next question.",
   },
 ];
 
 const QUICK_REPLIES = [
-  "Quiz me!",
-  "Explain more",
-  "Next question",
-  "Harder please",
-  "Give me a hint",
-  "I don't get it",
-  "Hat trick! 3 more",
+  { text: "Quiz me!", icon: "\uD83C\uDFAF", color: "#00d4aa" },
+  { text: "Explain more", icon: "\uD83D\uDCA1", color: "#f59e0b" },
+  { text: "Next question", icon: "\u27A1\uFE0F", color: "#3b82f6" },
+  { text: "Harder please", icon: "\uD83D\uDD25", color: "#ef4444" },
+  { text: "Give me a hint", icon: "\uD83E\uDD14", color: "#7c3aed" },
+  { text: "I don't get it", icon: "\uD83D\uDE15", color: "#ff6b35" },
+  { text: "Hat trick! 3 more", icon: "\uD83C\uDFC6", color: "#00d4aa" },
 ];
 
 const DIFFICULTY_DOTS: Record<string, number> = {
@@ -81,11 +87,145 @@ const DIFFICULTY_DOTS: Record<string, number> = {
   Hard: 3,
 };
 
+/* ═══════════════════════════════════════════
+   Markdown-lite renderer:
+   - **bold** text
+   - (A) (B) (C) (D) answer options as tappable visual cards
+   ═══════════════════════════════════════════ */
+
+function renderInlineMarkdown(text: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  const boldRegex = /\*\*(.+?)\*\*/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = boldRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <strong
+        key={`b-${match.index}`}
+        style={{ color: "#ffffff", fontWeight: 700 }}
+      >
+        {match[1]}
+      </strong>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts;
+}
+
+function renderContent(text: string, modeColor: string): ReactNode {
+  const lines = text.split("\n");
+  const elements: ReactNode[] = [];
+
+  lines.forEach((line, lineIdx) => {
+    // Detect multiple choice options: (A), A), A., etc.
+    const optionMatch = line.match(/^\s*\(?([A-Da-d])\)?[.)]\s*(.+)/);
+
+    if (optionMatch) {
+      const letter = optionMatch[1].toUpperCase();
+      const optionText = optionMatch[2];
+      elements.push(
+        <div
+          key={`opt-${lineIdx}`}
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+            padding: "12px 14px",
+            marginTop: 6,
+            marginBottom: 6,
+            borderRadius: 14,
+            backgroundColor: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              background: `linear-gradient(135deg, ${modeColor}, ${modeColor}cc)`,
+              color: "#0b1120",
+              fontWeight: 800,
+              fontSize: 14,
+              flexShrink: 0,
+              boxShadow: `0 2px 8px ${modeColor}40`,
+            }}
+          >
+            {letter}
+          </span>
+          <span style={{ paddingTop: 5, lineHeight: 1.5 }}>
+            {renderInlineMarkdown(optionText)}
+          </span>
+        </div>
+      );
+      return;
+    }
+
+    // Regular line
+    if (lineIdx > 0) elements.push(<br key={`br-${lineIdx}`} />);
+    elements.push(
+      <span key={`ln-${lineIdx}`}>{renderInlineMarkdown(line)}</span>
+    );
+  });
+
+  return <>{elements}</>;
+}
+
+/* ═══════════════════════════════════════════
+   Animated message wrapper - slide + fade in
+   ═══════════════════════════════════════════ */
+function AnimatedMessage({
+  children,
+  fromRight = false,
+}: {
+  children: ReactNode;
+  fromRight?: boolean;
+}) {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setShow(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
+
+  return (
+    <div
+      style={{
+        opacity: show ? 1 : 0,
+        transform: show
+          ? "translateY(0) translateX(0)"
+          : `translateY(10px) translateX(${fromRight ? "12px" : "-12px"})`,
+        transition:
+          "opacity 0.3s ease, transform 0.35s cubic-bezier(.4,0,.2,1)",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Main Page Component
+   ═══════════════════════════════════════════ */
 export default function PracticePage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
+  const [sessionQuestions, setSessionQuestions] = useState(0);
+  const [sessionStreak, setSessionStreak] = useState(0);
+  const [pressedCard, setPressedCard] = useState<string | null>(null);
+  const [pressedReply, setPressedReply] = useState<string | null>(null);
+  const [sendPop, setSendPop] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -93,40 +233,68 @@ export default function PracticePage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  async function sendMessage(content: string, resetMessages?: boolean) {
-    const userMessage: Message = { role: "user", content };
-    const baseMessages = resetMessages ? [] : messages;
-    const newMessages = [...baseMessages, userMessage];
-    setMessages(newMessages);
-    setInput("");
-    setLoading(true);
+  // Track question count
+  useEffect(() => {
+    const qCount = messages.filter(
+      (m) => m.role === "assistant" && m.content.includes("?")
+    ).length;
+    setSessionQuestions(qCount);
+  }, [messages]);
 
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages }),
-      });
-      const data = await res.json();
-      setMessages([...newMessages, { role: "assistant", content: data.response }]);
-    } catch {
-      setMessages([
-        ...newMessages,
-        { role: "assistant", content: "Sorry, something went wrong. Please try again." },
-      ]);
-    }
-    setLoading(false);
-    setTimeout(() => inputRef.current?.focus(), 100);
-  }
+  const sendMessage = useCallback(
+    async (content: string, resetMessages?: boolean) => {
+      setSendPop(true);
+      setTimeout(() => setSendPop(false), 250);
+
+      const userMessage: Message = { role: "user", content };
+      const baseMessages = resetMessages ? [] : messages;
+      const newMessages = [...baseMessages, userMessage];
+      setMessages(newMessages);
+      setInput("");
+      setLoading(true);
+
+      if (!resetMessages) {
+        setSessionStreak((s) => s + 1);
+      }
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: newMessages }),
+        });
+        const data = await res.json();
+        setMessages([
+          ...newMessages,
+          { role: "assistant", content: data.response },
+        ]);
+      } catch {
+        setMessages([
+          ...newMessages,
+          {
+            role: "assistant",
+            content: "Sorry, something went wrong. Try again!",
+          },
+        ]);
+      }
+      setLoading(false);
+      setTimeout(() => inputRef.current?.focus(), 100);
+    },
+    [messages]
+  );
 
   function startMode(mode: (typeof PRACTICE_MODES)[0]) {
     setSelectedMode(mode.id);
+    setSessionQuestions(0);
+    setSessionStreak(0);
     sendMessage(mode.prompt, true);
   }
 
-  function clearChat() {
+  function goBackToModes() {
     setMessages([]);
     setSelectedMode(null);
+    setSessionQuestions(0);
+    setSessionStreak(0);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -136,115 +304,240 @@ export default function PracticePage() {
   }
 
   const currentMode = PRACTICE_MODES.find((m) => m.id === selectedMode);
+  const modeColor = currentMode?.color || "#00d4aa";
+  const modeGlow = currentMode?.glow || "rgba(0, 212, 170, 0.3)";
   const showModeSelector = !selectedMode && messages.length === 0;
+
+  // Skip the system prompt from visible messages
+  const visibleMessages = messages.filter(
+    (_, i) => i > 0 || !selectedMode
+  );
 
   return (
     <div
-      style={{ minHeight: "100vh", backgroundColor: "#f8fafc" }}
-      className="flex flex-col"
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#0b1120",
+        display: "flex",
+        flexDirection: "column",
+      }}
     >
-      {/* ─── Mode Selection Screen ─── */}
+      {/* ═══════════════════════════════════════════════
+          MODE SELECTION - Game Level Select Screen
+          ═══════════════════════════════════════════════ */}
       {showModeSelector && (
-        <div className="max-w-4xl mx-auto px-4 py-8 w-full">
+        <div
+          style={{
+            maxWidth: 540,
+            margin: "0 auto",
+            padding: "20px 16px 120px",
+            width: "100%",
+          }}
+        >
           {/* Header */}
-          <div className="text-center mb-8">
+          <div style={{ textAlign: "center", marginBottom: 28 }}>
             <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-4"
-              style={{ backgroundColor: "#1e3a5f", color: "#00d4aa" }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "6px 16px",
+                borderRadius: 50,
+                fontSize: 11,
+                fontWeight: 800,
+                backgroundColor: "rgba(0, 212, 170, 0.12)",
+                color: "#00d4aa",
+                border: "1px solid rgba(0, 212, 170, 0.25)",
+                marginBottom: 14,
+                letterSpacing: 1.5,
+                textTransform: "uppercase",
+              }}
             >
-              <span>&#9889;</span> AI-Powered Practice
+              {"\u26A1"} AI Practice Arena
             </div>
             <h1
-              className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2"
-              style={{ color: "#1e3a5f" }}
+              style={{
+                fontSize: 28,
+                fontWeight: 900,
+                color: "#f1f5f9",
+                letterSpacing: -0.5,
+                marginBottom: 6,
+                lineHeight: 1.15,
+              }}
             >
-              Choose Your Drill
+              Pick a Drill,{" "}
+              <span style={{ color: "#00d4aa" }}>Drop the Puck</span>
             </h1>
-            <p className="text-sm" style={{ color: "#475569" }}>
-              Pick a practice mode and go 1-on-1 with your AI coach
+            <p style={{ fontSize: 14, color: "#64748b", fontWeight: 500 }}>
+              Go 1-on-1 with Coach Frost
             </p>
           </div>
 
-          {/* Mode cards grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Mode Cards - full width, stacked like game levels */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {PRACTICE_MODES.map((mode) => {
               const dots = DIFFICULTY_DOTS[mode.difficulty] || 2;
+              const isPressed = pressedCard === mode.id;
               return (
                 <button
                   key={mode.id}
                   onClick={() => startMode(mode)}
-                  className="text-left rounded-2xl p-5 transition-all duration-200 hover:shadow-xl hover:scale-[1.02] group relative overflow-hidden"
+                  onPointerDown={() => setPressedCard(mode.id)}
+                  onPointerUp={() => setPressedCard(null)}
+                  onPointerLeave={() => setPressedCard(null)}
                   style={{
-                    backgroundColor: "white",
-                    border: "2px solid #e2e8f0",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                    padding: "16px 18px",
+                    borderRadius: 18,
+                    backgroundColor: "#1a2332",
+                    border: `2px solid ${isPressed ? mode.color : "#2a3a4e"}`,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    position: "relative",
+                    overflow: "hidden",
+                    transition: "all 0.15s ease",
+                    transform: isPressed ? "scale(0.97)" : "scale(1)",
+                    boxShadow: isPressed
+                      ? `0 0 24px ${mode.glow}, inset 0 0 30px ${mode.glow}`
+                      : "0 2px 8px rgba(0,0,0,0.25)",
+                    minHeight: 86,
                   }}
                 >
-                  {/* Hover glow */}
+                  {/* Left accent stripe */}
                   <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                     style={{
-                      background: `radial-gradient(circle at 30% 30%, ${mode.color}10, transparent 70%)`,
+                      position: "absolute",
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: 4,
+                      backgroundColor: mode.color,
                     }}
                   />
 
                   {/* Icon */}
                   <div
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-md transition-transform group-hover:scale-110 relative"
                     style={{
-                      background: `linear-gradient(135deg, ${mode.color}, ${mode.color}cc)`,
+                      width: 50,
+                      height: 50,
+                      borderRadius: 14,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 24,
+                      background: `linear-gradient(135deg, ${mode.color}25, ${mode.color}08)`,
+                      border: `1px solid ${mode.color}35`,
+                      flexShrink: 0,
+                      transition: "transform 0.15s ease",
+                      transform: isPressed
+                        ? "scale(1.1) rotate(-5deg)"
+                        : "scale(1)",
                     }}
                   >
                     {mode.icon}
                   </div>
 
-                  {/* Title */}
-                  <h3 className="font-bold text-base mb-1.5 relative" style={{ color: "#1e3a5f" }}>
-                    {mode.label}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-xs leading-relaxed mb-4 relative" style={{ color: "#64748b" }}>
-                    {mode.description}
-                  </p>
-
-                  {/* Bottom meta */}
-                  <div className="flex items-center justify-between relative">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold" style={{ color: "#64748b" }}>
-                        Difficulty
-                      </span>
-                      <div className="flex gap-0.5">
+                  {/* Text content */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontSize: 15,
+                        fontWeight: 800,
+                        color: "#f1f5f9",
+                        marginBottom: 3,
+                        letterSpacing: -0.2,
+                      }}
+                    >
+                      {mode.label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: "#94a3b8",
+                        lineHeight: 1.35,
+                        marginBottom: 6,
+                      }}
+                    >
+                      {mode.description}
+                    </div>
+                    {/* Difficulty + time */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 3,
+                        }}
+                      >
                         {Array.from({ length: 3 }, (_, i) => (
                           <div
                             key={i}
-                            className="w-2 h-2 rounded-full"
                             style={{
-                              backgroundColor: i < dots ? mode.color : "#e2e8f0",
+                              width: 7,
+                              height: 7,
+                              borderRadius: "50%",
+                              backgroundColor:
+                                i < dots
+                                  ? mode.color
+                                  : "rgba(255,255,255,0.08)",
+                              boxShadow:
+                                i < dots
+                                  ? `0 0 4px ${mode.color}50`
+                                  : "none",
                             }}
                           />
                         ))}
+                        <span
+                          style={{
+                            fontSize: 10,
+                            color: "#64748b",
+                            fontWeight: 700,
+                            marginLeft: 3,
+                          }}
+                        >
+                          {mode.difficulty}
+                        </span>
                       </div>
+                      <span
+                        style={{
+                          fontSize: 10,
+                          color: "#64748b",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {"\u23F1"} {mode.time}
+                      </span>
                     </div>
-                    <span
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: "#f1f5f9", color: "#64748b" }}
-                    >
-                      ~{mode.time}
-                    </span>
                   </div>
 
-                  {/* Play hint on hover */}
+                  {/* Play button */}
                   <div
-                    className="mt-3 flex items-center gap-2 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity relative"
-                    style={{ color: mode.color }}
+                    style={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: "50%",
+                      backgroundColor: `${mode.color}18`,
+                      border: `2px solid ${mode.color}40`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      color: mode.color,
+                      fontSize: 13,
+                      fontWeight: 900,
+                      transition: "all 0.15s ease",
+                      transform: isPressed ? "scale(1.2)" : "scale(1)",
+                    }}
                   >
-                    <span
-                      className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px]"
-                      style={{ backgroundColor: mode.color }}
-                    >
-                      &#9654;
-                    </span>
-                    Start Mission
+                    {"\u25B6"}
                   </div>
                 </button>
               );
@@ -253,276 +546,583 @@ export default function PracticePage() {
         </div>
       )}
 
-      {/* ─── Chat Interface ─── */}
+      {/* ═══════════════════════════════════════════════
+          CHAT INTERFACE
+          ═══════════════════════════════════════════════ */}
       {!showModeSelector && (
-        <div className="flex-1 flex flex-col max-w-3xl mx-auto w-full px-4">
-          {/* Chat header */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            maxWidth: 640,
+            margin: "0 auto",
+            width: "100%",
+          }}
+        >
+          {/* Session Header / Scoreboard */}
           <div
-            className="flex items-center justify-between py-4 border-b flex-shrink-0"
-            style={{ borderColor: "#e2e8f0" }}
+            style={{
+              padding: "10px 14px",
+              borderBottom: "1px solid #2a3a4e",
+              backgroundColor: "rgba(15, 23, 41, 0.95)",
+              backdropFilter: "blur(12px)",
+              flexShrink: 0,
+              position: "sticky",
+              top: 0,
+              zIndex: 20,
+            }}
           >
-            <div className="flex items-center gap-3">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 10,
+              }}
+            >
+              {/* Back button */}
+              <button
+                onClick={goBackToModes}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  padding: "9px 14px",
+                  borderRadius: 12,
+                  backgroundColor: "#1a2332",
+                  border: "1px solid #2a3a4e",
+                  color: "#94a3b8",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  flexShrink: 0,
+                  minHeight: 44,
+                  minWidth: 44,
+                  transition: "all 0.15s ease",
+                }}
+              >
+                {"\u2190"} Modes
+              </button>
+
+              {/* Coach + mode name */}
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-md"
                 style={{
-                  background: currentMode
-                    ? `linear-gradient(135deg, ${currentMode.color}, ${currentMode.color}cc)`
-                    : "linear-gradient(135deg, #1e3a5f, #2d5a8e)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  flex: 1,
+                  justifyContent: "center",
+                  minWidth: 0,
                 }}
               >
-                {currentMode?.icon || "\uD83E\uDD16"}
-              </div>
-              <div>
-                <h2 className="font-bold text-sm" style={{ color: "#1e3a5f" }}>
-                  {currentMode?.label || "AI Tutor"}
-                </h2>
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: loading ? "#fbbf24" : "#00d4aa" }}
-                  />
-                  <span className="text-[10px] font-medium" style={{ color: "#64748b" }}>
-                    {loading ? "Typing..." : "Online"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {/* Mode switcher pills (desktop) */}
-              <div className="hidden sm:flex items-center gap-1.5">
-                {PRACTICE_MODES.map((mode) => (
-                  <button
-                    key={mode.id}
-                    onClick={() => startMode(mode)}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all hover:scale-110"
-                    style={{
-                      backgroundColor:
-                        selectedMode === mode.id ? `${mode.color}20` : "#f1f5f9",
-                      border:
-                        selectedMode === mode.id
-                          ? `2px solid ${mode.color}`
-                          : "2px solid transparent",
-                    }}
-                    title={mode.label}
-                  >
-                    {mode.icon}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                onClick={clearChat}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:shadow-md"
-                style={{
-                  backgroundColor: "white",
-                  color: "#64748b",
-                  border: "1px solid #e2e8f0",
-                }}
-              >
-                <span>&#10005;</span> Clear
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile mode switcher (horizontal scroll) */}
-          <div
-            className="sm:hidden flex gap-2 py-3 overflow-x-auto flex-shrink-0"
-            style={{ scrollbarWidth: "none" }}
-          >
-            {PRACTICE_MODES.map((mode) => (
-              <button
-                key={mode.id}
-                onClick={() => startMode(mode)}
-                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all"
-                style={{
-                  backgroundColor:
-                    selectedMode === mode.id ? mode.color : "white",
-                  color: selectedMode === mode.id ? "white" : "#64748b",
-                  border: `1.5px solid ${selectedMode === mode.id ? mode.color : "#e2e8f0"}`,
-                }}
-              >
-                <span>{mode.icon}</span> {mode.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Messages area */}
-          <div
-            className="flex-1 overflow-y-auto py-4 space-y-4"
-            style={{ minHeight: "400px", maxHeight: "calc(100vh - 280px)" }}
-          >
-            {messages
-              .filter((_, i) => i > 0 || !selectedMode)
-              .map((msg, i) => (
+                {/* Coach avatar */}
                 <div
-                  key={i}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 12,
+                    background: `linear-gradient(135deg, ${modeColor}, ${modeColor}aa)`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 18,
+                    flexShrink: 0,
+                    boxShadow: `0 0 14px ${modeGlow}`,
+                    position: "relative",
+                  }}
                 >
-                  {/* AI avatar */}
-                  {msg.role === "assistant" && (
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1 shadow-sm"
-                      style={{
-                        background: "linear-gradient(135deg, #1e3a5f, #2d5a8e)",
-                      }}
-                    >
-                      <span role="img" aria-label="tutor">
-                        &#129302;
-                      </span>
-                    </div>
-                  )}
-
+                  {currentMode?.icon || "\u2744\uFE0F"}
+                  {/* Online dot */}
                   <div
-                    className="max-w-[80%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line shadow-sm"
-                    style={
-                      msg.role === "user"
-                        ? {
-                            backgroundColor: "#00d4aa",
-                            color: "white",
-                            borderBottomRightRadius: "6px",
-                          }
-                        : {
-                            backgroundColor: "white",
-                            color: "#334155",
-                            border: "1px solid #e2e8f0",
-                            borderBottomLeftRadius: "6px",
-                          }
-                    }
+                    style={{
+                      position: "absolute",
+                      bottom: -2,
+                      right: -2,
+                      width: 12,
+                      height: 12,
+                      borderRadius: "50%",
+                      backgroundColor: loading ? "#fbbf24" : "#22c55e",
+                      border: "2px solid #0b1120",
+                    }}
+                  />
+                </div>
+                <div style={{ overflow: "hidden" }}>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 800,
+                      color: "#f1f5f9",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      lineHeight: 1.2,
+                    }}
                   >
-                    {msg.role === "assistant" && (
-                      <p
-                        className="text-[10px] font-extrabold uppercase tracking-wider mb-1.5"
-                        style={{ color: "#1e3a5f" }}
-                      >
-                        AI Tutor
-                      </p>
-                    )}
-                    {msg.content}
+                    Coach Frost
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: modeColor,
+                      fontWeight: 600,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {loading
+                      ? "Thinking..."
+                      : currentMode?.label || "Practice"}
                   </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Session stats */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  flexShrink: 0,
+                }}
+              >
+                {/* Question counter */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    padding: "4px 10px",
+                    borderRadius: 10,
+                    backgroundColor: `${modeColor}12`,
+                    border: `1px solid ${modeColor}30`,
+                    minWidth: 44,
+                    minHeight: 44,
+                    justifyContent: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 17,
+                      fontWeight: 900,
+                      color: modeColor,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {sessionQuestions}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 8,
+                      color: "#64748b",
+                      fontWeight: 800,
+                      textTransform: "uppercase",
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    Q&apos;s
+                  </span>
+                </div>
+
+                {/* Streak badge */}
+                {sessionStreak > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      padding: "4px 10px",
+                      borderRadius: 10,
+                      backgroundColor: "rgba(255, 107, 53, 0.1)",
+                      border: "1px solid rgba(255, 107, 53, 0.25)",
+                      minWidth: 44,
+                      minHeight: 44,
+                      justifyContent: "center",
+                      animation:
+                        sessionStreak >= 5
+                          ? "streak-glow 1.5s infinite ease-in-out"
+                          : "none",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 17,
+                        fontWeight: 900,
+                        color: "#ff6b35",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {sessionStreak}
+                    </span>
+                    <span style={{ fontSize: 8, lineHeight: 1 }}>
+                      {"\uD83D\uDD25"}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div
+              style={{
+                marginTop: 8,
+                height: 3,
+                borderRadius: 2,
+                backgroundColor: "rgba(255,255,255,0.05)",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  height: "100%",
+                  borderRadius: 2,
+                  width: `${Math.min(sessionQuestions * 10, 100)}%`,
+                  background: `linear-gradient(90deg, ${modeColor}, ${modeColor}cc)`,
+                  transition: "width 0.5s ease",
+                  boxShadow: `0 0 8px ${modeGlow}`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Messages Area */}
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              padding: "16px 14px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 14,
+              minHeight: 200,
+              maxHeight: "calc(100vh - 320px)",
+              scrollbarWidth: "thin",
+              scrollbarColor: "#2a3a4e transparent",
+            }}
+          >
+            {visibleMessages.map((msg, i) => {
+              const isUser = msg.role === "user";
+              const isLatest = i === visibleMessages.length - 1;
+
+              return (
+                <AnimatedMessage key={i} fromRight={isUser}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: isUser ? "flex-end" : "flex-start",
+                      alignItems: "flex-start",
+                      gap: 10,
+                    }}
+                  >
+                    {/* Coach avatar */}
+                    {!isUser && (
+                      <div
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 12,
+                          background: `linear-gradient(135deg, #1e3a5f, ${modeColor})`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 16,
+                          flexShrink: 0,
+                          boxShadow: `0 2px 10px ${modeGlow}`,
+                        }}
+                      >
+                        {"\u2744\uFE0F"}
+                      </div>
+                    )}
+
+                    <div
+                      style={{
+                        maxWidth: "82%",
+                        borderRadius: 18,
+                        padding: isUser ? "12px 16px" : "14px 18px",
+                        fontSize: 15,
+                        lineHeight: 1.6,
+                        ...(isUser
+                          ? {
+                              background: `linear-gradient(135deg, ${modeColor}, ${modeColor}cc)`,
+                              color: "#0b1120",
+                              borderBottomRightRadius: 6,
+                              fontWeight: 600,
+                              boxShadow: `0 3px 12px ${modeGlow}`,
+                            }
+                          : {
+                              backgroundColor: "#1a2332",
+                              color: "#e2e8f0",
+                              border: isLatest
+                                ? `1px solid ${modeColor}40`
+                                : "1px solid #2a3a4e",
+                              borderBottomLeftRadius: 6,
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                            }),
+                      }}
+                    >
+                      {!isUser && (
+                        <div
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 800,
+                            textTransform: "uppercase",
+                            letterSpacing: 1.2,
+                            color: modeColor,
+                            marginBottom: 6,
+                          }}
+                        >
+                          Coach Frost
+                        </div>
+                      )}
+                      {isUser
+                        ? msg.content
+                        : renderContent(msg.content, modeColor)}
+                    </div>
+                  </div>
+                </AnimatedMessage>
+              );
+            })}
 
             {/* Typing indicator */}
             {loading && (
-              <div className="flex justify-start">
+              <AnimatedMessage>
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 mr-2 mt-1 shadow-sm"
-                  style={{ background: "linear-gradient(135deg, #1e3a5f, #2d5a8e)" }}
-                >
-                  <span role="img" aria-label="tutor">
-                    &#129302;
-                  </span>
-                </div>
-                <div
-                  className="rounded-2xl px-5 py-4 shadow-sm"
                   style={{
-                    backgroundColor: "white",
-                    border: "1px solid #e2e8f0",
-                    borderBottomLeftRadius: "6px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 10,
                   }}
                 >
-                  <div className="flex gap-1.5">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full inline-block"
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 12,
+                      background: `linear-gradient(135deg, #1e3a5f, ${modeColor})`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 16,
+                      flexShrink: 0,
+                      animation: "coach-bob 1.5s infinite ease-in-out",
+                    }}
+                  >
+                    {"\u2744\uFE0F"}
+                  </div>
+                  <div
+                    style={{
+                      borderRadius: 18,
+                      padding: "16px 22px",
+                      backgroundColor: "#1a2332",
+                      border: `1px solid ${modeColor}30`,
+                      borderBottomLeftRadius: 6,
+                    }}
+                  >
+                    <div
                       style={{
-                        backgroundColor: "#94a3b8",
-                        animation: "bounce-dot 1.4s infinite ease-in-out",
-                        animationDelay: "0s",
+                        display: "flex",
+                        gap: 6,
+                        alignItems: "center",
                       }}
-                    />
-                    <span
-                      className="w-2.5 h-2.5 rounded-full inline-block"
-                      style={{
-                        backgroundColor: "#94a3b8",
-                        animation: "bounce-dot 1.4s infinite ease-in-out",
-                        animationDelay: "0.2s",
-                      }}
-                    />
-                    <span
-                      className="w-2.5 h-2.5 rounded-full inline-block"
-                      style={{
-                        backgroundColor: "#94a3b8",
-                        animation: "bounce-dot 1.4s infinite ease-in-out",
-                        animationDelay: "0.4s",
-                      }}
-                    />
+                    >
+                      {[0, 0.2, 0.4].map((delay, idx) => (
+                        <span
+                          key={idx}
+                          style={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            backgroundColor: modeColor,
+                            display: "inline-block",
+                            animation: `bounce-dot 1.4s infinite ease-in-out ${delay}s`,
+                            opacity: 0.6,
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </AnimatedMessage>
             )}
 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick reply chips */}
-          {!loading && messages.length > 0 && (
+          {/* Quick Replies - 2-column grid, big tappable buttons */}
+          {!loading && visibleMessages.length > 0 && (
             <div
-              className="flex gap-2 py-2 overflow-x-auto flex-shrink-0"
-              style={{ scrollbarWidth: "none" }}
+              style={{
+                padding: "8px 14px",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 8,
+                flexShrink: 0,
+                borderTop: "1px solid rgba(255,255,255,0.04)",
+              }}
             >
-              {QUICK_REPLIES.map((reply) => (
-                <button
-                  key={reply}
-                  onClick={() => sendMessage(reply)}
-                  className="flex-shrink-0 px-3.5 py-2 rounded-full text-xs font-bold transition-all hover:shadow-md hover:scale-[1.03]"
-                  style={{
-                    backgroundColor: "white",
-                    color: "#1e3a5f",
-                    border: "1.5px solid #e2e8f0",
-                  }}
-                >
-                  {reply}
-                </button>
-              ))}
+              {QUICK_REPLIES.map((reply) => {
+                const isPressed = pressedReply === reply.text;
+                return (
+                  <button
+                    key={reply.text}
+                    onClick={() => sendMessage(reply.text)}
+                    onPointerDown={() => setPressedReply(reply.text)}
+                    onPointerUp={() => setPressedReply(null)}
+                    onPointerLeave={() => setPressedReply(null)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 7,
+                      padding: "12px 10px",
+                      borderRadius: 14,
+                      backgroundColor: isPressed
+                        ? `${reply.color}20`
+                        : "#1a2332",
+                      border: `1.5px solid ${
+                        isPressed ? reply.color : "#2a3a4e"
+                      }`,
+                      color: isPressed ? reply.color : "#cfd8dc",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.12s ease",
+                      transform: isPressed ? "scale(0.95)" : "scale(1)",
+                      minHeight: 48,
+                      boxShadow: isPressed
+                        ? `0 0 12px ${reply.color}25`
+                        : "none",
+                    }}
+                  >
+                    <span style={{ fontSize: 16 }}>{reply.icon}</span>
+                    {reply.text}
+                  </button>
+                );
+              })}
             </div>
           )}
 
-          {/* Input area (sticky bottom) */}
+          {/* Input Area - Bottom anchored */}
           <div
-            className="py-4 flex-shrink-0 sticky bottom-0"
-            style={{ backgroundColor: "#f8fafc" }}
+            style={{
+              padding: "12px 14px 16px",
+              flexShrink: 0,
+              backgroundColor: "#0b1120",
+              borderTop: "1px solid #1a2332",
+              position: "sticky",
+              bottom: 0,
+              zIndex: 20,
+              paddingBottom:
+                "max(16px, env(safe-area-inset-bottom, 16px))",
+            }}
           >
-            <form onSubmit={handleSubmit} className="flex gap-2">
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                display: "flex",
+                gap: 10,
+                alignItems: "center",
+              }}
+            >
               <input
                 ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your answer or ask a question..."
-                className="flex-1 px-4 py-3.5 rounded-xl text-sm font-medium border-2 focus:outline-none transition-all"
-                style={{
-                  borderColor: input.trim() ? "#00d4aa" : "#e2e8f0",
-                  backgroundColor: "white",
-                  color: "#0f172a",
-                  caretColor: "#0f172a",
-                }}
+                placeholder="Type your answer..."
                 disabled={loading}
+                style={{
+                  flex: 1,
+                  padding: "14px 18px",
+                  borderRadius: 16,
+                  fontSize: 15,
+                  fontWeight: 600,
+                  border: `2px solid ${
+                    input.trim() ? modeColor : "#2a3a4e"
+                  }`,
+                  backgroundColor: "#111827",
+                  color: "#f1f5f9",
+                  caretColor: modeColor,
+                  outline: "none",
+                  transition:
+                    "border-color 0.2s ease, box-shadow 0.2s ease",
+                  minHeight: 52,
+                  fontFamily: "inherit",
+                  boxShadow: input.trim()
+                    ? `0 0 16px ${modeGlow}`
+                    : "none",
+                }}
               />
               <button
                 type="submit"
-                className="px-5 py-3.5 rounded-xl font-extrabold text-sm text-white transition-all hover:shadow-lg hover:scale-[1.03] disabled:opacity-40 disabled:hover:scale-100 disabled:hover:shadow-none"
-                style={{ backgroundColor: "#00d4aa" }}
                 disabled={loading || !input.trim()}
+                style={{
+                  width: 54,
+                  height: 54,
+                  borderRadius: 16,
+                  background:
+                    !input.trim() || loading
+                      ? "#2a3a4e"
+                      : `linear-gradient(135deg, ${modeColor}, ${modeColor}cc)`,
+                  color:
+                    !input.trim() || loading ? "#64748b" : "#0b1120",
+                  border: "none",
+                  cursor:
+                    !input.trim() || loading
+                      ? "not-allowed"
+                      : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 22,
+                  fontWeight: 900,
+                  flexShrink: 0,
+                  transition: "all 0.15s ease",
+                  transform: sendPop ? "scale(0.8)" : "scale(1)",
+                  boxShadow:
+                    input.trim() && !loading
+                      ? `0 4px 16px ${modeGlow}`
+                      : "none",
+                }}
               >
-                <span className="hidden sm:inline">Send</span>
-                <span className="sm:hidden text-lg">&#10148;</span>
+                {"\u2191"}
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Animations */}
+      {/* Keyframe Animations */}
       <style jsx>{`
         @keyframes bounce-dot {
           0%,
           80%,
           100% {
             transform: translateY(0);
+            opacity: 0.4;
           }
           40% {
             transform: translateY(-8px);
+            opacity: 1;
+          }
+        }
+        @keyframes coach-bob {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.08);
+          }
+        }
+        @keyframes streak-glow {
+          0%,
+          100% {
+            box-shadow: 0 0 4px rgba(255, 107, 53, 0.2);
+          }
+          50% {
+            box-shadow: 0 0 16px rgba(255, 107, 53, 0.5);
           }
         }
       `}</style>
